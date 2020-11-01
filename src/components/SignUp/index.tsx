@@ -16,7 +16,6 @@ interface SignupFormState {
 
 const SignUpPage = () => (
   <div>
-    <h1>SignUp</h1>
     <SignUpForm />
   </div>
 );
@@ -72,8 +71,10 @@ const SignUpFormBase = (props: any) => {
     username === "";
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="form">
+      <h1>SignUp</h1>
       <input
+        className="form-input"
         name="username"
         value={username}
         onChange={onChange}
@@ -81,6 +82,7 @@ const SignUpFormBase = (props: any) => {
         placeholder="Full Name"
       />
       <input
+        className="form-input"
         name="email"
         value={email}
         onChange={onChange}
@@ -88,6 +90,7 @@ const SignUpFormBase = (props: any) => {
         placeholder="Email Address"
       />
       <input
+        className="form-input"
         name="passwordOne"
         value={passwordOne}
         onChange={onChange}
@@ -95,13 +98,14 @@ const SignUpFormBase = (props: any) => {
         placeholder="Password"
       />
       <input
+        className="form-input"
         name="passwordTwo"
         value={passwordTwo}
         onChange={onChange}
         type="password"
         placeholder="Confirm Password"
       />
-      <button disabled={isInvalid} type="submit">
+      <button className="form-button" disabled={isInvalid} type="submit">
         Sign Up
       </button>
       {error && <p>{error.message}</p>}

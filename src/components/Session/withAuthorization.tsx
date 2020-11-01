@@ -19,7 +19,8 @@ const withAuthorization = (condition: Function) => (
         },
         () => props.history.push(ROUTES.SIGN_IN)
       );
-    });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     return (
       <AuthUserContext.Consumer>
         {(authUser) => (condition(authUser) ? <Component {...props} /> : null)}

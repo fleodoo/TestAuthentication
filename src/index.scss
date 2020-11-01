@@ -1,0 +1,153 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.NavigationBar {
+  background-color: #333;
+  overflow: hidden;
+  display: inline-block;
+  width: 100%;
+  .link {
+    /* RESET */
+    text-decoration: none;
+    line-height: 1;
+    position: relative;
+    z-index: 0;
+    padding: 5px 5px;
+    overflow: hidden;
+    color: #fff;
+    vertical-align: bottom;
+    transition: color 0.3s ease-out;
+  }
+  .link::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    transform: translateY(calc(100%));
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(60deg, #64b3f4 0%, #c2e59c 100%);
+    transition: transform 0.25s ease-out;
+  }
+  .link:hover {
+    color: #fff;
+  }
+  .link:hover::before {
+    transform: translateY(0);
+    transition: transform 0.25s ease-out;
+  }
+  .signin {
+    padding: 5px 5px;
+    text-decoration: none;
+    float: right;
+    transition: all 0.3s ease-in-out;
+    background-color: #49c5b6;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+  }
+  .signin:hover {
+    color: #fff;
+    background-color: #42ab9e;
+  }
+}
+
+.center {
+  text-align: center;
+}
+.form {
+  margin: 12% auto;
+  width: 19em;
+  text-align: center;
+  position: relative;
+  animation: moveDown 0.4s;
+  animation-fill-mode: forwards;
+
+  // animates to come down
+  @keyframes moveDown {
+    0% {
+      transform: translate(0, -50%);
+      opacity: 0;
+    }
+    100% {
+      transform: translate(0, 0);
+      opacity: 1;
+    }
+  }
+
+  .form-input {
+    color: #444;
+    font-size: 1.5em;
+    outline: none;
+    box-shadow: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+    border-top: none;
+    border-left: solid 1px;
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+    border-color: #bbb;
+    background: transparent;
+    display: block;
+    height: 2em;
+    width: 12em;
+    margin-bottom: 5%;
+    padding: 0 3%;
+    position: relative;
+    z-index: 0;
+  }
+  .form-button {
+    border: none;
+    display: inline-block;
+    font-size: 1.5em;
+    padding: 0.3em 1.2em;
+    margin: 0 0.3em 0.3em 0;
+    border-radius: 2em;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    color: #ffffff;
+    background-color: #4eb5f1;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .form-button:hover:enabled {
+    background-color: #4095c6;
+  }
+
+  .form-button:disabled {
+    color: #5f5f5f;
+    background-color: #2b3841;
+  }
+}
+
+.signOutButton {
+  padding: 5px 5px;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  display: inline-block;
+  background-color: #49c5b6;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+.signOutButton:hover {
+  color: #fff;
+  background-color: #42ab9e;
+}

@@ -9,52 +9,53 @@ import { AuthUserContext } from "../Session";
 interface NavigationProps {
   authUser: any;
 }
+const renderNagationbar: any = (authUser: any) => {
+  return authUser ? (
+    <NavigationAuth authUser={authUser} />
+  ) : (
+    <NavigationNonAuth />
+  );
+};
 
 const Navigation = () => (
   <div>
     <AuthUserContext.Consumer>
-      {(authUser) =>
-        authUser ? (
-          <NavigationAuth authUser={authUser} />
-        ) : (
-          <NavigationNonAuth />
-        )
-      }
+      {(authUser) => renderNagationbar(authUser)}
     </AuthUserContext.Consumer>
   </div>
 );
 
 const NavigationAuth = (props: NavigationProps) => (
-  <ul>
-    <li>
-      <Link to={ROUTES.LANDING}>Landing</Link>
-    </li>
-    <li>
-      <Link to={ROUTES.HOME}>Home</Link>
-    </li>
-    <li>
-      <Link to={ROUTES.ACCOUNT}>Account</Link>
-    </li>
+  <div className="NavigationBar">
+    <Link className="link" to={ROUTES.LANDING}>
+      Landing
+    </Link>
+    <Link className="link" to={ROUTES.HOME}>
+      Home
+    </Link>
+    <Link className="link" to={ROUTES.ACCOUNT}>
+      Account
+    </Link>
     {!!props.authUser.roles[ROLES.ADMIN] && (
-      <li>
-        <Link to={ROUTES.ADMIN}>Admin</Link>
-      </li>
+      <Link className="link" to={ROUTES.ADMIN}>
+        Admin
+      </Link>
     )}
-    <li>
+    <div style={{ float: "right" }}>
       <SignOutButton />
-    </li>
-  </ul>
+    </div>
+  </div>
 );
 
 const NavigationNonAuth = () => (
-  <ul>
-    <li>
-      <Link to={ROUTES.LANDING}>Landing</Link>
-    </li>
-    <li>
-      <Link to={ROUTES.SIGN_IN}>Sign In</Link>
-    </li>
-  </ul>
+  <div className="NavigationBar">
+    <Link className="link" to={ROUTES.LANDING}>
+      Landing
+    </Link>
+    <Link className="signin" to={ROUTES.SIGN_IN}>
+      Sign In
+    </Link>
+  </div>
 );
 
 export default Navigation;

@@ -1,4 +1,3 @@
-import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import React from "react";
 
 import PasswordChangeForm from "../PasswordChange";
@@ -7,7 +6,9 @@ import { AuthUserContext, withAuthorization } from "../Session";
 const AccountPage = () => (
   <AuthUserContext.Consumer>
     {(authUser) => (
-      <div>
+      <div className="center">
+        <h1>Account Information:</h1>
+        {authUser && <h1>Username: {authUser.username}</h1>}
         {authUser && <h1>Account: {authUser.email}</h1>}
         <PasswordChangeForm />
       </div>
@@ -15,6 +16,6 @@ const AccountPage = () => (
   </AuthUserContext.Consumer>
 );
 
-const condition = (authUser: FirebaseAuthTypes.User | null) => !!authUser;
+const condition = (authUser: any) => !!authUser;
 
 export default withAuthorization(condition)(AccountPage);

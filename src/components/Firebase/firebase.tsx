@@ -32,7 +32,9 @@ class Firebase {
   doSignInWithEmailAndPassword = (email: string, password: string) =>
     this.auth.signInWithEmailAndPassword(email, password);
 
-  doSignOut = () => this.auth.signOut();
+  doSignOut = () => {
+    this.auth.signOut();
+  };
 
   doPasswordReset = (email: string) => this.auth.sendPasswordResetEmail(email);
 
@@ -72,7 +74,6 @@ class Firebase {
   // *** User API ***
 
   user = (uid: string) => this.db.ref(`users/${uid}`);
-
   users = () => this.db.ref("users");
 }
 

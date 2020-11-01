@@ -23,13 +23,10 @@ const AdminPage = (props: any) => {
     setState((prevState: AdminState) => ({ ...prevState, loading: true }));
     props.firebase.users().on("value", (snapshot: any) => {
       const usersObject = snapshot.val();
-      console.log(usersObject);
-
       const usersList = Object.keys(usersObject).map((key) => ({
         ...usersObject[key],
         uid: key,
       }));
-      console.log(usersList);
       setState({
         users: usersList,
         loading: false,
