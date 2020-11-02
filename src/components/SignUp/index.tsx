@@ -5,8 +5,8 @@ import { compose } from "recompose";
 import { withFirebase } from "../Firebase";
 import * as ROUTES from "../../constants/routes";
 import * as ROLES from "../../constants/roles";
+import { ERRORS, MAILREGEX } from "../../constants/errors";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
-
 interface SignupFormState {
   username: string;
   email: string;
@@ -31,11 +31,22 @@ const SignupFormInit = (): SignupFormState => {
 
 const SignUpFormBase = (props: any) => {
   const [state, setState] = useState<SignupFormState>(SignupFormInit());
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<string[]>([]);
   const roles: { [key: string]: string } = {};
   roles[ROLES.USER] = ROLES.USER;
-
   const onSubmit = (event: React.FormEvent) => {
+    const newErrors: string[] = [];
+    if (state.passwordOne !== state.passwordTwo) {
+      newErrors.push(ERRORS.DIFFENT_PASS);
+    }
+    if (!MAILREGEX.test(state.email)) {
+      newErrors.push(ERRORS.INVALID_MAIL);
+    }
+    if (newErrors.length) {
+      setError(newErrors);
+      event.preventDefault();
+      return;
+    }
     const { username, email, passwordOne } = state;
     props.firebase
       .doCreateUserWithEmailAndPassword(email, passwordOne)
@@ -52,7 +63,7 @@ const SignUpFormBase = (props: any) => {
         props.history.push(ROUTES.HOME);
       })
       .catch((error: any) => {
-        setError(error);
+        setError([error.message]);
       });
     event.preventDefault();
   };
@@ -65,51 +76,56 @@ const SignUpFormBase = (props: any) => {
   const { username, email, passwordOne, passwordTwo } = state;
 
   const isInvalid =
-    passwordOne !== passwordTwo ||
-    passwordOne === "" ||
-    email === "" ||
-    username === "";
+    passwordTwo === "" || passwordOne === "" || email === "" || username === "";
 
   return (
-    <form onSubmit={onSubmit} className="form">
-      <h1>SignUp</h1>
-      <input
-        className="form-input"
-        name="username"
-        value={username}
-        onChange={onChange}
-        type="text"
-        placeholder="Full Name"
-      />
-      <input
-        className="form-input"
-        name="email"
-        value={email}
-        onChange={onChange}
-        type="text"
-        placeholder="Email Address"
-      />
-      <input
-        className="form-input"
-        name="passwordOne"
-        value={passwordOne}
-        onChange={onChange}
-        type="password"
-        placeholder="Password"
-      />
-      <input
-        className="form-input"
-        name="passwordTwo"
-        value={passwordTwo}
-        onChange={onChange}
-        type="password"
-        placeholder="Confirm Password"
-      />
-      <button className="form-button" disabled={isInvalid} type="submit">
-        Sign Up
-      </button>
-      {error && <p>{error.message}</p>}
-    </form>
+    <div>
+      <form onSubmit={onSubmit} className="form">
+        <h1>SignUp</h1>
+        <input
+          className="form-input"
+          name="username"
+          value={username}
+          onChange={onChange}
+          type="text"
+          placeholder="Full Name"
+        />
+        <input
+          className="form-input"
+          name="email"
+          value={email}
+          onChange={onChange}
+          type="text"
+          placeholder="Email Address"
+        />
+        <input
+          className="form-input"
+          name="passwordOne"
+          value={passwordOne}
+          onChange={onChange}
+          type="password"
+          placeholder="Password"
+        />
+        <input
+          className="form-input"
+          name="passwordTwo"
+          value={passwordTwo}
+          onChange={onChange}
+          type="password"
+          placeholder="Confirm Password"
+        />
+        <button className="form-button" disabled={isInvalid} type="submit">
+          Sign Up
+        </button>
+      </form>
+      {error.length > 0 && (
+        <div className="form-errorbox">
+          {error.map((value: string, index: number) => {
+            return <li key={index}>{value}</li>;
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 

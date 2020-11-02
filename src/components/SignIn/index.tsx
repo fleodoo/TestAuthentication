@@ -28,7 +28,7 @@ const SignInFormInit = (): SignInFormState => {
 
 const SignInFormBase = (props: any) => {
   const [state, setState] = useState<SignInFormState>(SignInFormInit());
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<string[]>([]);
 
   const onSubmit = (event: React.FormEvent) => {
     const { email, password } = state;
@@ -39,7 +39,7 @@ const SignInFormBase = (props: any) => {
         props.history.push(ROUTES.HOME);
       })
       .catch((error: any) => {
-        setError(error);
+        setError([error.message]);
       });
     event.preventDefault();
   };
@@ -53,31 +53,39 @@ const SignInFormBase = (props: any) => {
 
   const isInvalid = password === "" || email === "";
   return (
-    <form onSubmit={onSubmit} className="form">
-      <h1>SignIn</h1>
-      <input
-        className="form-input"
-        name="email"
-        value={email}
-        onChange={onChange}
-        type="text"
-        placeholder="Email Address"
-      />
-      <input
-        className="form-input"
-        name="password"
-        value={password}
-        onChange={onChange}
-        type="password"
-        placeholder="Password"
-      />
-      <button className="form-button" disabled={isInvalid} type="submit">
-        Sign In
-      </button>
-      <PasswordForgetLink />
-      <SignUpLink />
-      {error && <p>{error.message}</p>}
-    </form>
+    <div>
+      <form onSubmit={onSubmit} className="form">
+        <h1>SignIn</h1>
+        <input
+          className="form-input"
+          name="email"
+          value={email}
+          onChange={onChange}
+          type="text"
+          placeholder="Email Address"
+        />
+        <input
+          className="form-input"
+          name="password"
+          value={password}
+          onChange={onChange}
+          type="password"
+          placeholder="Password"
+        />
+        <button className="form-button" disabled={isInvalid} type="submit">
+          Sign In
+        </button>
+        <PasswordForgetLink />
+        <SignUpLink />
+      </form>
+      {error.length > 0 && (
+        <div className="form-errorbox">
+          {error.map((value: string, index: number) => {
+            return <li key={index}>{value}</li>;
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -1,32 +1,42 @@
 import React, { ChangeEvent, useState } from "react";
 
 import { withFirebase } from "../Firebase";
+import { ERRORS } from "../../constants/errors";
 
 interface PasswordChangeState {
   passwordOne: string;
   passwordTwo: string;
-  error: any;
 }
+
 const initState = (): PasswordChangeState => {
   return {
     passwordOne: "",
     passwordTwo: "",
-    error: null,
   };
 };
 
 const PasswordChangeForm = (props: any) => {
   const [state, setState] = useState<PasswordChangeState>(initState());
+  const [error, setError] = useState<string[]>([]);
 
   const onSubmit = (event: React.FormEvent) => {
-    const { passwordOne } = state;
+    const { passwordOne, passwordTwo } = state;
+    const newErrors: string[] = [];
+    if (passwordOne !== passwordTwo) {
+      newErrors.push(ERRORS.DIFFENT_PASS);
+    }
+    if (newErrors.length) {
+      setError(newErrors);
+      event.preventDefault();
+      return;
+    }
     props.firebase
       .doPasswordUpdate(passwordOne)
       .then(() => {
         setState(initState());
       })
       .catch((error: any) => {
-        setState((prevState: PasswordChangeState) => ({ ...prevState, error }));
+        setError([error.message]);
       });
     event.preventDefault();
   };
@@ -39,33 +49,41 @@ const PasswordChangeForm = (props: any) => {
     }));
   };
 
-  const { passwordOne, passwordTwo, error } = state;
-  const isInvalid = passwordOne !== passwordTwo || passwordOne === "";
+  const { passwordOne, passwordTwo } = state;
+  const isInvalid = passwordTwo === "" || passwordOne === "";
 
   return (
-    <form onSubmit={onSubmit} className="form">
-      <h1>Change Password</h1>
-      <input
-        className="form-input"
-        name="passwordOne"
-        value={passwordOne}
-        onChange={onChange}
-        type="password"
-        placeholder="New Password"
-      />
-      <input
-        className="form-input"
-        name="passwordTwo"
-        value={passwordTwo}
-        onChange={onChange}
-        type="password"
-        placeholder="Confirm New Password"
-      />
-      <button className="form-button" disabled={isInvalid} type="submit">
-        Reset My Password
-      </button>
-      {error && <p>{error.message}</p>}
-    </form>
+    <div>
+      <form onSubmit={onSubmit} className="form">
+        <h1>Change Password</h1>
+        <input
+          className="form-input"
+          name="passwordOne"
+          value={passwordOne}
+          onChange={onChange}
+          type="password"
+          placeholder="New Password"
+        />
+        <input
+          className="form-input"
+          name="passwordTwo"
+          value={passwordTwo}
+          onChange={onChange}
+          type="password"
+          placeholder="Confirm New Password"
+        />
+        <button className="form-button" disabled={isInvalid} type="submit">
+          Reset My Password
+        </button>
+      </form>
+      {error.length > 0 && (
+        <div className="form-errorbox">
+          {error.map((value: string, index: number) => {
+            return <li key={index}>{value}</li>;
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 
