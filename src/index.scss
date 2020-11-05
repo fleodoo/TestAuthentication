@@ -38,7 +38,8 @@ code {
     transform: translateY(calc(100%));
     width: 100%;
     height: 100%;
-    background-image: linear-gradient(60deg, #64b3f4 0%, #c2e59c 100%);
+    // background-image: linear-gradient(60deg, #64b3f4 0%, #c2e59c 100%);
+    background-color: #49c5b6;
     transition: transform 0.25s ease-out;
   }
   .link:hover {
@@ -103,19 +104,22 @@ code {
     background: transparent;
     display: block;
     height: 2em;
-    width: 15em;
+    width: 14em;
     margin-bottom: 5%;
     margin-left: auto;
     margin-right: auto;
     padding: 0 3%;
+    padding-right: 7%;
     position: relative;
     z-index: 0;
   }
+
   .error {
     border-color: red;
   }
   .form-button {
     border: none;
+    outline: none;
     display: inline-block;
     font-size: 1.5em;
     padding: 0.3em 1.2em;
@@ -141,6 +145,7 @@ code {
 }
 
 .form-errorbox {
+  animation: moveDown 0.4s;
   background-color: #ffbfbf;
   width: 25em;
   margin-left: auto;
@@ -163,4 +168,16 @@ code {
 .signOutButton:hover {
   color: #fff;
   background-color: #42ab9e;
+}
+
+.relativePosition {
+  position: relative;
+}
+.passwordShown {
+  // color: #444;
+  position: absolute;
+  left: 91%;
+  top: 29%;
+  width: 4%;
+  padding: 0.5%;
 }
