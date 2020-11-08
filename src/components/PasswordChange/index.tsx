@@ -8,6 +8,22 @@ interface PasswordChangeState {
   passwordTwo: string;
 }
 
+enum PasswordShownClass {
+  Hidden = "fas fa-eye passwordShown",
+  Shown = "fas fa-eye-slash passwordShown",
+}
+
+interface PWstate {
+  passwordOne: {
+    type: string;
+    className: PasswordShownClass;
+  };
+  passwordTwo: {
+    type: string;
+    className: PasswordShownClass;
+  };
+}
+
 const initState = (): PasswordChangeState => {
   return {
     passwordOne: "",
@@ -15,30 +31,63 @@ const initState = (): PasswordChangeState => {
   };
 };
 
+const PasswordStateInit = (): PWstate => {
+  return {
+    passwordOne: { type: "password", className: PasswordShownClass.Hidden },
+    passwordTwo: { type: "password", className: PasswordShownClass.Hidden },
+  };
+};
+
 const PasswordChangeForm = (props: any) => {
   const [state, setState] = useState<PasswordChangeState>(initState());
   const [error, setError] = useState<string[]>([]);
+  const [buttonClicked, setButtonClicked] = useState<boolean>(false);
+  const [passwordChanged, setPasswordChanged] = useState<boolean>(false);
+  const [passwordVisibility, setPasswordVisibility] = useState<PWstate>(
+    PasswordStateInit()
+  );
+  const togglePassword = (password: "passwordOne" | "passwordTwo") => {
+    const currentPasswordVisibilty = passwordVisibility[password];
+    if (currentPasswordVisibilty.type === "password") {
+      const value = { type: "text", className: PasswordShownClass.Shown };
+      setPasswordVisibility((prevState: PWstate) => ({
+        ...prevState,
+        [password]: value,
+      }));
+    } else {
+      const value = { type: "password", className: PasswordShownClass.Hidden };
+      setPasswordVisibility((prevState: PWstate) => ({
+        ...prevState,
+        [password]: value,
+      }));
+    }
+  };
 
-  const onSubmit = (event: React.FormEvent) => {
+  const onSubmit = async (event: React.FormEvent) => {
     const { passwordOne, passwordTwo } = state;
-    const newErrors: string[] = [];
-    if (passwordOne !== passwordTwo) {
-      newErrors.push(ERRORS.DIFFENT_PASS);
-    }
-    if (newErrors.length) {
-      setError(newErrors);
-      event.preventDefault();
-      return;
-    }
-    props.firebase
-      .doPasswordUpdate(passwordOne)
-      .then(() => {
-        setState(initState());
-      })
-      .catch((error: any) => {
-        setError([error.message]);
-      });
     event.preventDefault();
+    setButtonClicked(true);
+    setPasswordChanged(false);
+    setError([]);
+    const isSubmitting = async () => {
+      if (passwordOne !== passwordTwo) {
+        setButtonClicked(false);
+        setError([ERRORS.DIFFENT_PASS]);
+        return Promise.resolve();
+      }
+      return await props.firebase
+        .doPasswordUpdate(passwordOne)
+        .then(() => {
+          setPasswordChanged(true);
+          setState(initState());
+          setButtonClicked(false);
+        })
+        .catch((error: any) => {
+          setButtonClicked(false);
+          setError([error.message]);
+        });
+    };
+    await isSubmitting();
   };
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -50,37 +99,58 @@ const PasswordChangeForm = (props: any) => {
   };
 
   const { passwordOne, passwordTwo } = state;
-  const isInvalid = passwordTwo === "" || passwordOne === "";
+  const isInvalid = passwordTwo === "" || passwordOne === "" || buttonClicked;
 
   return (
     <div>
       <form onSubmit={onSubmit} className="form">
         <h1>Change Password</h1>
-        <input
-          className="form-input"
-          name="passwordOne"
-          value={passwordOne}
-          onChange={onChange}
-          type="password"
-          placeholder="New Password"
-        />
-        <input
-          className="form-input"
-          name="passwordTwo"
-          value={passwordTwo}
-          onChange={onChange}
-          type="password"
-          placeholder="Confirm New Password"
-        />
+        <div className="relativePosition">
+          <input
+            className="form-input"
+            name="passwordOne"
+            value={passwordOne}
+            onChange={onChange}
+            type={passwordVisibility.passwordOne.type}
+            placeholder="Password"
+          />
+          {passwordOne.length > 0 && (
+            <i
+              className={passwordVisibility.passwordOne.className}
+              onClick={(ev) => togglePassword("passwordOne")}
+            ></i>
+          )}
+        </div>
+        <div className="relativePosition">
+          <input
+            className="form-input"
+            name="passwordTwo"
+            value={passwordTwo}
+            onChange={onChange}
+            type={passwordVisibility.passwordTwo.type}
+            placeholder="Confirm Password"
+          />
+          {passwordTwo.length > 0 && (
+            <i
+              className={passwordVisibility.passwordTwo.className}
+              onClick={(ev) => togglePassword("passwordTwo")}
+            ></i>
+          )}
+        </div>
         <button className="form-button" disabled={isInvalid} type="submit">
           Reset My Password
         </button>
       </form>
       {error.length > 0 && (
-        <div className="form-errorbox">
+        <div className="errorbox">
           {error.map((value: string, index: number) => {
             return <li key={index}>{value}</li>;
           })}
+        </div>
+      )}
+      {passwordChanged && (
+        <div className="notification">
+          <li key="0">Your password has successfully been changed.</li>
         </div>
       )}
     </div>

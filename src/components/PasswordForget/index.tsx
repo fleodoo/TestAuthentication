@@ -74,7 +74,7 @@ const PasswordForgetFormBase = (props: any) => {
         </button>
       </form>
       {error.length > 0 && (
-        <div className="form-errorbox">
+        <div className="errorbox">
           {error.map((value: string, index: number) => {
             return <li key={index}>{value}</li>;
           })}

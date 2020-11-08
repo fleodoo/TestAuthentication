@@ -1,6 +1,7 @@
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import React from "react";
-import { withAuthorization } from "../Session";
+import { withAuthorization, withEmailVerification } from "../Session";
+import { compose } from "recompose";
 
 const HomePage = () => (
   <div className="center">
@@ -11,4 +12,7 @@ const HomePage = () => (
 
 const condition = (authUser: FirebaseAuthTypes.User | null) => !!authUser;
 
-export default withAuthorization(condition)(HomePage);
+export default compose(
+  withEmailVerification,
+  withAuthorization(condition)
+)(HomePage);

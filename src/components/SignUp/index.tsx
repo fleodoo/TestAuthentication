@@ -86,7 +86,6 @@ const SignUpFormBase = (props: any) => {
     setError([]);
     const newErrors: string[] = [];
     const isSubmitting = async () => {
-      console.log("isSumbiting");
       if (state.passwordOne !== state.passwordTwo) {
         newErrors.push(ERRORS.DIFFENT_PASS);
       }
@@ -106,20 +105,23 @@ const SignUpFormBase = (props: any) => {
             });
           })
           .then(() => {
+            return props.firebase.doSendEmailVerification();
+          })
+          .then(() => {
             setState(SignupFormInit());
+            setButtonClicked(false);
             props.history.push(ROUTES.HOME);
           })
           .catch((error: any) => {
-            console.log(error);
-            newErrors.push(error.message);
+            setButtonClicked(false);
+            setError([error.message]);
           });
-      } else {
-        return Promise.resolve();
       }
+      setButtonClicked(false);
+      setError(newErrors);
+      return Promise.resolve();
     };
     await isSubmitting();
-    setButtonClicked(false);
-    setError(newErrors);
   };
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -193,7 +195,7 @@ const SignUpFormBase = (props: any) => {
         </button>
       </form>
       {error.length > 0 && (
-        <div className="form-errorbox">
+        <div className="errorbox">
           {error.map((value: string, index: number) => {
             return <li key={index}>{value}</li>;
           })}

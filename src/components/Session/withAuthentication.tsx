@@ -7,8 +7,10 @@ interface AppState {
   authUser: any;
 }
 const initAppSate = (): AppState => {
+  const localUser = localStorage.getItem("authUser");
+  const authUser = localUser ? JSON.parse(localUser) : null;
   return {
-    authUser: null,
+    authUser,
   };
 };
 
@@ -19,9 +21,11 @@ const withAuthentication = (Component: React.ComponentType) => {
     useEffect(() => {
       props.firebase.onAuthUserListener(
         (authUser: any) => {
+          localStorage.setItem("authUser", JSON.stringify(authUser));
           setState({ authUser });
         },
         () => {
+          localStorage.removeItem("authUser");
           setState({ authUser: null });
         }
       );

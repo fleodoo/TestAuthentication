@@ -36,12 +36,21 @@ class Firebase {
     this.auth.signOut();
   };
 
+  doSendEmailVerification = () => {
+    if (this.auth.currentUser) {
+      return this.auth.currentUser.sendEmailVerification({
+        url: "https://react-firebase-authentic-b7af0.web.app/signin",
+      });
+    }
+    return Promise.resolve();
+  };
   doPasswordReset = (email: string) => this.auth.sendPasswordResetEmail(email);
 
   doPasswordUpdate = (password: string) => {
     if (this.auth.currentUser) {
-      this.auth.currentUser.updatePassword(password);
+      return this.auth.currentUser.updatePassword(password);
     }
+    return Promise.resolve();
   };
 
   // *** Merge Auth and DB User API *** //
@@ -62,6 +71,8 @@ class Firebase {
             authUser = {
               uid: authUser!.uid,
               email: authUser!.email,
+              emailVerified: authUser!.emailVerified,
+              providerData: authUser!.providerData,
               ...dbUser,
             };
 

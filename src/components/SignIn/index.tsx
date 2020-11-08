@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { compose } from "recompose";
 
@@ -11,6 +11,16 @@ interface SignInFormState {
   [key: string]: string | null;
   email: string;
   password: string;
+}
+
+enum PasswordShownClass {
+  Hidden = "fas fa-eye passwordShown",
+  Shown = "fas fa-eye-slash passwordShown",
+}
+
+interface PWstate {
+  type: string;
+  className: PasswordShownClass;
 }
 
 const SignInPage = () => (
@@ -26,22 +36,62 @@ const SignInFormInit = (): SignInFormState => {
   };
 };
 
+const PasswordStateInit = (): PWstate => {
+  return {
+    type: "password",
+    className: PasswordShownClass.Hidden,
+  };
+};
+
 const SignInFormBase = (props: any) => {
   const [state, setState] = useState<SignInFormState>(SignInFormInit());
   const [error, setError] = useState<string[]>([]);
+  const [buttonClicked, setButtonClicked] = useState<boolean>(false);
+  const [passwordVisibility, setPasswordVisibility] = useState<PWstate>(
+    PasswordStateInit()
+  );
+  const mountedRef = useRef(true);
 
-  const onSubmit = (event: React.FormEvent) => {
-    const { email, password } = state;
-    props.firebase
-      .doSignInWithEmailAndPassword(email, password)
-      .then(() => {
-        setState(SignInFormInit());
-        props.history.push(ROUTES.HOME);
-      })
-      .catch((error: any) => {
-        setError([error.message]);
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  const togglePassword = () => {
+    const currentPasswordVisibilty = passwordVisibility;
+    if (currentPasswordVisibilty.type === "password") {
+      setPasswordVisibility({
+        type: "text",
+        className: PasswordShownClass.Shown,
       });
+    } else {
+      setPasswordVisibility({
+        type: "password",
+        className: PasswordShownClass.Hidden,
+      });
+    }
+  };
+
+  const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setButtonClicked(true);
+    setError([]);
+    const { email, password } = state;
+    const isSubmitting = async () => {
+      return await props.firebase
+        .doSignInWithEmailAndPassword(email, password)
+        .then(() => {
+          setState(SignInFormInit());
+          setButtonClicked(false);
+          props.history.push(ROUTES.HOME);
+        })
+        .catch((error: any) => {
+          setButtonClicked(false);
+          setError([error.message]);
+        });
+    };
+    await isSubmitting();
   };
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +101,8 @@ const SignInFormBase = (props: any) => {
 
   const { email, password } = state;
 
-  const isInvalid = password === "" || email === "";
+  const isInvalid = password === "" || email === "" || buttonClicked;
+
   return (
     <div>
       <form onSubmit={onSubmit} className="form">
@@ -64,14 +115,22 @@ const SignInFormBase = (props: any) => {
           type="text"
           placeholder="Email Address"
         />
-        <input
-          className="form-input"
-          name="password"
-          value={password}
-          onChange={onChange}
-          type="password"
-          placeholder="Password"
-        />
+        <div className="relativePosition">
+          <input
+            className="form-input"
+            name="password"
+            value={password}
+            onChange={onChange}
+            type={passwordVisibility.type}
+            placeholder="Password"
+          />
+          {password.length > 0 && (
+            <i
+              className={passwordVisibility.className}
+              onClick={(ev) => togglePassword()}
+            ></i>
+          )}
+        </div>
         <button className="form-button" disabled={isInvalid} type="submit">
           Sign In
         </button>
@@ -79,7 +138,7 @@ const SignInFormBase = (props: any) => {
         <SignUpLink />
       </form>
       {error.length > 0 && (
-        <div className="form-errorbox">
+        <div className="errorbox">
           {error.map((value: string, index: number) => {
             return <li key={index}>{value}</li>;
           })}
