@@ -1,5 +1,6 @@
 import React, { ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { withFirebase } from "../Firebase";
 import * as ROUTES from "../../constants/routes";
@@ -21,6 +22,8 @@ const initState = (): PasswordForgetState => {
 };
 
 const PasswordForgetFormBase = (props: any) => {
+  const { t } = useTranslation();
+
   const [state, setState] = useState<PasswordForgetState>(initState());
   const [error, setError] = useState<string[]>([]);
 
@@ -60,17 +63,17 @@ const PasswordForgetFormBase = (props: any) => {
   return (
     <div>
       <form onSubmit={onSubmit} className="form">
-        <h1>Reset Your Password</h1>
+        <h1>{t("Reset Password")}</h1>
         <input
           className="form-input"
           name="email"
           value={state.email}
           onChange={onChange}
           type="text"
-          placeholder="Email Address"
+          placeholder={t("Email address")}
         />
         <button className="form-button" disabled={isInvalid} type="submit">
-          Reset My Password
+          {t("Reset Password")}
         </button>
       </form>
       {error.length > 0 && (
@@ -84,11 +87,14 @@ const PasswordForgetFormBase = (props: any) => {
   );
 };
 
-const PasswordForgetLink = () => (
-  <p>
-    <Link to={ROUTES.PASSWORD_FORGET}>Forgot Password?</Link>
-  </p>
-);
+const PasswordForgetLink = () => {
+  const { t } = useTranslation();
+  return (
+    <p>
+      <Link to={ROUTES.PASSWORD_FORGET}>{t("Forgot Password?")}</Link>
+    </p>
+  );
+};
 export default PasswordForgetPage;
 const PasswordForgetForm = withFirebase(PasswordForgetFormBase);
 export { PasswordForgetForm, PasswordForgetLink };

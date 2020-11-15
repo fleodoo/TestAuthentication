@@ -1,6 +1,8 @@
 import React from "react";
-
 import PasswordChangeForm from "../PasswordChange";
+import DeleteAccountForm from "../DeleteAccount";
+import { useTranslation } from "react-i18next";
+
 import {
   AuthUserContext,
   withAuthorization,
@@ -8,18 +10,30 @@ import {
 } from "../Session";
 import { compose } from "recompose";
 
-const AccountPage = () => (
-  <AuthUserContext.Consumer>
-    {(authUser) => (
-      <div className="center">
-        <h1>Account Information:</h1>
-        {authUser && <h1>Username: {authUser.username}</h1>}
-        {authUser && <h1>Account: {authUser.email}</h1>}
-        <PasswordChangeForm />
-      </div>
-    )}
-  </AuthUserContext.Consumer>
-);
+const AccountPage = () => {
+  const { t } = useTranslation();
+  return (
+    <AuthUserContext.Consumer>
+      {(authUser) => (
+        <div className="center">
+          <h1>{t("Account Information")}:</h1>
+          {authUser && (
+            <h1>
+              {t("Username")}: {authUser.username}
+            </h1>
+          )}
+          {authUser && (
+            <h1>
+              {t("Email address")}: {authUser.email}
+            </h1>
+          )}
+          <PasswordChangeForm />
+          <DeleteAccountForm />
+        </div>
+      )}
+    </AuthUserContext.Consumer>
+  );
+};
 
 const condition = (authUser: any) => !!authUser;
 

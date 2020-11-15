@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { compose } from "recompose";
+import { useTranslation } from "react-i18next";
 
 import { SignUpLink } from "../SignUp";
 import { withFirebase } from "../Firebase";
@@ -44,6 +45,7 @@ const PasswordStateInit = (): PWstate => {
 };
 
 const SignInFormBase = (props: any) => {
+  const { t } = useTranslation();
   const [state, setState] = useState<SignInFormState>(SignInFormInit());
   const [error, setError] = useState<string[]>([]);
   const [buttonClicked, setButtonClicked] = useState<boolean>(false);
@@ -84,7 +86,7 @@ const SignInFormBase = (props: any) => {
         .then(() => {
           setState(SignInFormInit());
           setButtonClicked(false);
-          props.history.push(ROUTES.HOME);
+          props.history.push(ROUTES.LANDING);
         })
         .catch((error: any) => {
           setButtonClicked(false);
@@ -106,14 +108,14 @@ const SignInFormBase = (props: any) => {
   return (
     <div>
       <form onSubmit={onSubmit} className="form">
-        <h1>SignIn</h1>
+        <h1>{t("Log In")}</h1>
         <input
           className="form-input"
           name="email"
           value={email}
           onChange={onChange}
           type="text"
-          placeholder="Email Address"
+          placeholder={t("Email address")}
         />
         <div className="relativePosition">
           <input
@@ -122,7 +124,7 @@ const SignInFormBase = (props: any) => {
             value={password}
             onChange={onChange}
             type={passwordVisibility.type}
-            placeholder="Password"
+            placeholder={t("Password")}
           />
           {password.length > 0 && (
             <i
@@ -132,7 +134,7 @@ const SignInFormBase = (props: any) => {
           )}
         </div>
         <button className="form-button" disabled={isInvalid} type="submit">
-          Sign In
+          {t("Log In")}
         </button>
         <PasswordForgetLink />
         <SignUpLink />

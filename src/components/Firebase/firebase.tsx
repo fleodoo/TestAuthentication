@@ -36,6 +36,24 @@ class Firebase {
     this.auth.signOut();
   };
 
+  doDeleteUser = (currentPassword: string) => {
+    const user = this.auth.currentUser;
+    if (user && user.email) {
+      const credential = app.auth.EmailAuthProvider.credential(
+        user.email,
+        currentPassword
+      );
+      return user
+        .reauthenticateWithCredential(credential)
+        .then(() => {
+          this.user(user.uid).remove();
+        })
+        .then(() => {
+          user.delete();
+        });
+    }
+    return Promise.resolve();
+  };
   doSendEmailVerification = () => {
     if (this.auth.currentUser) {
       return this.auth.currentUser.sendEmailVerification({
@@ -46,9 +64,16 @@ class Firebase {
   };
   doPasswordReset = (email: string) => this.auth.sendPasswordResetEmail(email);
 
-  doPasswordUpdate = (password: string) => {
-    if (this.auth.currentUser) {
-      return this.auth.currentUser.updatePassword(password);
+  doPasswordUpdate = (currentPassword: string, newPassword: string) => {
+    const user = this.auth.currentUser;
+    if (user && user.email) {
+      const credential = app.auth.EmailAuthProvider.credential(
+        user.email,
+        currentPassword
+      );
+      return user.reauthenticateWithCredential(credential).then(() => {
+        user.updatePassword(newPassword);
+      });
     }
     return Promise.resolve();
   };

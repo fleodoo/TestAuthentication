@@ -2,8 +2,10 @@ import React, { ChangeEvent, useState } from "react";
 
 import { withFirebase } from "../Firebase";
 import { ERRORS } from "../../constants/errors";
+import { useTranslation } from "react-i18next";
 
 interface PasswordChangeState {
+  passwordCurrent: string;
   passwordOne: string;
   passwordTwo: string;
 }
@@ -13,7 +15,16 @@ enum PasswordShownClass {
   Shown = "fas fa-eye-slash passwordShown",
 }
 
+enum DropdownClass {
+  Visible = "fas fa-angle-up dropdown-icon",
+  Invisible = "fas fa-angle-down dropdown-icon",
+}
+
 interface PWstate {
+  passwordCurrent: {
+    type: string;
+    className: PasswordShownClass;
+  };
   passwordOne: {
     type: string;
     className: PasswordShownClass;
@@ -24,8 +35,14 @@ interface PWstate {
   };
 }
 
+interface DropdownState {
+  shown: boolean;
+  className: DropdownClass;
+}
+
 const initState = (): PasswordChangeState => {
   return {
+    passwordCurrent: "",
     passwordOne: "",
     passwordTwo: "",
   };
@@ -33,12 +50,21 @@ const initState = (): PasswordChangeState => {
 
 const PasswordStateInit = (): PWstate => {
   return {
+    passwordCurrent: { type: "password", className: PasswordShownClass.Hidden },
     passwordOne: { type: "password", className: PasswordShownClass.Hidden },
     passwordTwo: { type: "password", className: PasswordShownClass.Hidden },
   };
 };
 
+const DropdownStateInit = (): DropdownState => {
+  return {
+    shown: false,
+    className: DropdownClass.Invisible,
+  };
+};
+
 const PasswordChangeForm = (props: any) => {
+  const { t } = useTranslation();
   const [state, setState] = useState<PasswordChangeState>(initState());
   const [error, setError] = useState<string[]>([]);
   const [buttonClicked, setButtonClicked] = useState<boolean>(false);
@@ -46,7 +72,13 @@ const PasswordChangeForm = (props: any) => {
   const [passwordVisibility, setPasswordVisibility] = useState<PWstate>(
     PasswordStateInit()
   );
-  const togglePassword = (password: "passwordOne" | "passwordTwo") => {
+  const [dropdownShown, setDropdownShown] = useState<DropdownState>(
+    DropdownStateInit()
+  );
+
+  const togglePassword = (
+    password: "passwordOne" | "passwordTwo" | "passwordCurrent"
+  ) => {
     const currentPasswordVisibilty = passwordVisibility[password];
     if (currentPasswordVisibilty.type === "password") {
       const value = { type: "text", className: PasswordShownClass.Shown };
@@ -63,8 +95,22 @@ const PasswordChangeForm = (props: any) => {
     }
   };
 
+  const toggleDropdown = () => {
+    if (dropdownShown.shown) {
+      setDropdownShown({
+        shown: false,
+        className: DropdownClass.Invisible,
+      });
+    } else {
+      setDropdownShown({
+        shown: true,
+        className: DropdownClass.Visible,
+      });
+    }
+  };
+
   const onSubmit = async (event: React.FormEvent) => {
-    const { passwordOne, passwordTwo } = state;
+    const { passwordCurrent, passwordOne, passwordTwo } = state;
     event.preventDefault();
     setButtonClicked(true);
     setPasswordChanged(false);
@@ -76,7 +122,7 @@ const PasswordChangeForm = (props: any) => {
         return Promise.resolve();
       }
       return await props.firebase
-        .doPasswordUpdate(passwordOne)
+        .doPasswordUpdate(passwordCurrent, passwordOne)
         .then(() => {
           setPasswordChanged(true);
           setState(initState());
@@ -98,49 +144,77 @@ const PasswordChangeForm = (props: any) => {
     }));
   };
 
-  const { passwordOne, passwordTwo } = state;
-  const isInvalid = passwordTwo === "" || passwordOne === "" || buttonClicked;
+  const { passwordCurrent, passwordOne, passwordTwo } = state;
+  const isInvalid =
+    passwordCurrent === "" ||
+    passwordTwo === "" ||
+    passwordOne === "" ||
+    buttonClicked;
 
   return (
     <div>
       <form onSubmit={onSubmit} className="form">
-        <h1>Change Password</h1>
-        <div className="relativePosition">
-          <input
-            className="form-input"
-            name="passwordOne"
-            value={passwordOne}
-            onChange={onChange}
-            type={passwordVisibility.passwordOne.type}
-            placeholder="Password"
-          />
-          {passwordOne.length > 0 && (
-            <i
-              className={passwordVisibility.passwordOne.className}
-              onClick={(ev) => togglePassword("passwordOne")}
-            ></i>
-          )}
+        <div onClick={(ev) => toggleDropdown()} className="dropdown-title">
+          <h1 className="dropdown-title-text">{t("Change Password")}</h1>
+          <i className={dropdownShown.className}></i>
         </div>
-        <div className="relativePosition">
-          <input
-            className="form-input"
-            name="passwordTwo"
-            value={passwordTwo}
-            onChange={onChange}
-            type={passwordVisibility.passwordTwo.type}
-            placeholder="Confirm Password"
-          />
-          {passwordTwo.length > 0 && (
-            <i
-              className={passwordVisibility.passwordTwo.className}
-              onClick={(ev) => togglePassword("passwordTwo")}
-            ></i>
-          )}
-        </div>
-        <button className="form-button" disabled={isInvalid} type="submit">
-          Reset My Password
-        </button>
+        {dropdownShown.shown && (
+          <div className="dropdown-item">
+            <div className="relativePosition">
+              <input
+                className="form-input"
+                name="passwordCurrent"
+                value={passwordCurrent}
+                onChange={onChange}
+                type={passwordVisibility.passwordCurrent.type}
+                placeholder={t("Current Password")}
+              />
+              {passwordCurrent.length > 0 && (
+                <i
+                  className={passwordVisibility.passwordCurrent.className}
+                  onClick={(ev) => togglePassword("passwordCurrent")}
+                ></i>
+              )}
+            </div>
+            <div className="relativePosition">
+              <input
+                className="form-input"
+                name="passwordOne"
+                value={passwordOne}
+                onChange={onChange}
+                type={passwordVisibility.passwordOne.type}
+                placeholder={t("New Password")}
+              />
+              {passwordOne.length > 0 && (
+                <i
+                  className={passwordVisibility.passwordOne.className}
+                  onClick={(ev) => togglePassword("passwordOne")}
+                ></i>
+              )}
+            </div>
+            <div className="relativePosition">
+              <input
+                className="form-input"
+                name="passwordTwo"
+                value={passwordTwo}
+                onChange={onChange}
+                type={passwordVisibility.passwordTwo.type}
+                placeholder={t("Confirm New Password")}
+              />
+              {passwordTwo.length > 0 && (
+                <i
+                  className={passwordVisibility.passwordTwo.className}
+                  onClick={(ev) => togglePassword("passwordTwo")}
+                ></i>
+              )}
+            </div>
+            <button className="form-button" disabled={isInvalid} type="submit">
+              {t("Change Password")}
+            </button>
+          </div>
+        )}
       </form>
+      <div></div>
       {error.length > 0 && (
         <div className="errorbox">
           {error.map((value: string, index: number) => {
@@ -150,7 +224,7 @@ const PasswordChangeForm = (props: any) => {
       )}
       {passwordChanged && (
         <div className="notification">
-          <li key="0">Your password has successfully been changed.</li>
+          <li key="0">{t("Your password has successfully been changed.")}</li>
         </div>
       )}
     </div>

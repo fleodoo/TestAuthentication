@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { compose } from "recompose";
+import { useTranslation } from "react-i18next";
 
 import { withFirebase } from "../Firebase";
 import * as ROUTES from "../../constants/routes";
@@ -54,6 +55,7 @@ const PasswordStateInit = (): PWstate => {
 };
 
 const SignUpFormBase = (props: any) => {
+  const { t } = useTranslation();
   const [state, setState] = useState<SignupFormState>(SignupFormInit());
   const [error, setError] = useState<string[]>([]);
   const [buttonClicked, setButtonClicked] = useState<boolean>(false);
@@ -141,14 +143,14 @@ const SignUpFormBase = (props: any) => {
   return (
     <div>
       <form onSubmit={onSubmit} className="form">
-        <h1>SignUp</h1>
+        <h1>{t("Create New Account")}</h1>
         <input
           className="form-input"
           name="username"
           value={username}
           onChange={onChange}
           type="text"
-          placeholder="Full Name"
+          placeholder={t("Username")}
         />
         <input
           className="form-input"
@@ -156,7 +158,7 @@ const SignUpFormBase = (props: any) => {
           value={email}
           onChange={onChange}
           type="text"
-          placeholder="Email Address"
+          placeholder={t("Email Address")}
         />
         <div className="relativePosition">
           <input
@@ -165,7 +167,7 @@ const SignUpFormBase = (props: any) => {
             value={passwordOne}
             onChange={onChange}
             type={passwordVisibility.passwordOne.type}
-            placeholder="Password"
+            placeholder={t("Password")}
           />
           {passwordOne.length > 0 && (
             <i
@@ -181,7 +183,7 @@ const SignUpFormBase = (props: any) => {
             value={passwordTwo}
             onChange={onChange}
             type={passwordVisibility.passwordTwo.type}
-            placeholder="Confirm Password"
+            placeholder={t("Confirm password")}
           />
           {passwordTwo.length > 0 && (
             <i
@@ -191,7 +193,7 @@ const SignUpFormBase = (props: any) => {
           )}
         </div>
         <button className="form-button" disabled={isInvalid} type="submit">
-          Sign Up
+          {t("Create New Account")}
         </button>
       </form>
       {error.length > 0 && (
@@ -205,11 +207,16 @@ const SignUpFormBase = (props: any) => {
   );
 };
 
-const SignUpLink = () => (
-  <p>
-    Don't have an account? <Link to={ROUTES.SIGN_UP}>Sign Up</Link>
-  </p>
-);
+const SignUpLink = () => {
+  const { t } = useTranslation();
+  return (
+    <p>
+      {t("Don't have an account?")}
+      {t(" ")}
+      <Link to={ROUTES.SIGN_UP}>{t("Sign Up")}</Link>
+    </p>
+  );
+};
 
 const SignUpForm = compose(withRouter, withFirebase)(SignUpFormBase);
 
