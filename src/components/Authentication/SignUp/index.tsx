@@ -3,10 +3,10 @@ import { Link, withRouter } from "react-router-dom";
 import { compose } from "recompose";
 import { useTranslation } from "react-i18next";
 
-import { withFirebase } from "../Firebase";
-import * as ROUTES from "../../constants/routes";
-import * as ROLES from "../../constants/roles";
-import { ERRORS, MAILREGEX } from "../../constants/errors";
+import { withFirebase } from "../../Firebase";
+import * as ROUTES from "../../../constants/routes";
+import * as ROLES from "../../../constants/roles";
+import { ERRORS, MAILREGEX } from "../../../constants/errors";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 interface SignupFormState {

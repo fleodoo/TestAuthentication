@@ -30,5 +30,21 @@
   "Log Out": "Log Out",
   "Create New Account": "Create New Account",
   "Sign Up": "Sign Up",
-  "Don't have an account?": "Don't have an account?"
+  "Don't have an account?": "Don't have an account?",
+  "PlantBox": "PlantBox",
+  "Time": "Time",
+  "Temperature": "Temperature",
+  "Air Humidity": "Air Humidity",
+  "Soil Humidity": "Soil Humidity",
+  "Has Water": "Has Water",
+  "Big Lamp": "Big Lamp",
+  "Small Lamp": "Small Lamp",
+  "Pump": "Pump",
+  "Fan Wind": "Fan Wind",
+  "Fan Change": "Fan Change",
+  "Ok": "Ok",
+  "Not Ok": "Not Ok",
+  "Air & Soil Humidity": "Air & Soil Humidity",
+  "Time outputs where ON in minutes": "Time outputs where ON in minutes",
+  "ON/OFF status of outputs": "ON/OFF status of outputs"
 }

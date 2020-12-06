@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState } from "react";
 
-import { withFirebase } from "../Firebase";
-import { ERRORS } from "../../constants/errors";
+import { withFirebase } from "../../Firebase";
+import { ERRORS } from "../../../constants/errors";
 import { useTranslation } from "react-i18next";
 
 interface PasswordChangeState {

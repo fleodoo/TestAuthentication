@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { withFirebase } from "../Firebase";
+import { withFirebase } from "../../Firebase";
 
 enum PasswordShownClass {
   Hidden = "fas fa-eye passwordShown",

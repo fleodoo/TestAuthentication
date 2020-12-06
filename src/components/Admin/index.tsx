@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { compose } from "recompose";
 import { useTranslation } from "react-i18next";
-import { withAuthorization, withEmailVerification } from "../Session";
+import {
+  withAuthorization,
+  withEmailVerification,
+} from "../Authentication/Session";
 import * as ROLES from "../../constants/roles";
 import { withFirebase } from "../Firebase";
 

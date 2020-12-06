@@ -2,9 +2,9 @@ import React, { ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { withFirebase } from "../Firebase";
-import * as ROUTES from "../../constants/routes";
-import { ERRORS, MAILREGEX } from "../../constants/errors";
+import { withFirebase } from "../../Firebase";
+import * as ROUTES from "../../../constants/routes";
+import { ERRORS, MAILREGEX } from "../../../constants/errors";
 
 const PasswordForgetPage = () => (
   <div>

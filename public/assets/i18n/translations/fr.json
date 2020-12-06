@@ -30,5 +30,21 @@
   "Log Out": "Se déconnecter",
   "Create New Account": "Créer un nouveau compte",
   "Sign Up": "Inscription",
-  "Don't have an account?": "Vous n'avez pas de compte?"
+  "Don't have an account?": "Vous n'avez pas de compte?",
+  "PlantBox": "PlantBox",
+  "Time": "Date & Heure",
+  "Temperature": "Temperature",
+  "Air Humidity": "Humidité de l'air",
+  "Soil Humidity": "Humidité du sol",
+  "Has Water": "Reservoir d'eau",
+  "Big Lamp": "Grande Lampe",
+  "Small Lamp": "Petite Lampe",
+  "Pump": "Pompe",
+  "Fan Wind": "Ventilo 1",
+  "Fan Change": "Ventilo 2",
+  "Ok": "Ok",
+  "Not Ok": "Pas Ok",
+  "Air & Soil Humidity": "Humidité de l'air et du sol",
+  "Time outputs where ON in minutes": "Durée pour laquelle les sorties étaient allumées en minutes",
+  "ON/OFF status of outputs": "Status ON/OFF des sorties"
 }

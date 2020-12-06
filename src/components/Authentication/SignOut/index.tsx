@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { withFirebase } from "../Firebase";
+import { withFirebase } from "../../Firebase";
 
 const SignOutButton = ({ firebase }: any) => {
   const { t } = useTranslation();

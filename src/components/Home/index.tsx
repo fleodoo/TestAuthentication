@@ -1,6 +1,9 @@
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import React from "react";
-import { withAuthorization, withEmailVerification } from "../Session";
+import {
+  withAuthorization,
+  withEmailVerification,
+} from "../Authentication/Session";
 import { compose } from "recompose";
 
 const HomePage = () => (

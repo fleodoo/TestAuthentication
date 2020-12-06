@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import AuthUserContext from "./context";
-import { withFirebase } from "../Firebase";
+import { withFirebase } from "../../Firebase";
 
 interface AppState {
   authUser: any;

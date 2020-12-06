@@ -4,8 +4,8 @@ import { compose } from "recompose";
 import { useTranslation } from "react-i18next";
 
 import { SignUpLink } from "../SignUp";
-import { withFirebase } from "../Firebase";
-import * as ROUTES from "../../constants/routes";
+import { withFirebase } from "../../Firebase";
+import * as ROUTES from "../../../constants/routes";
 import { PasswordForgetLink } from "../PasswordForget";
 
 interface SignInFormState {

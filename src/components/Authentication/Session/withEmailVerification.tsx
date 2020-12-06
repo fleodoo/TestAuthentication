@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import AuthUserContext from "./context";
-import { withFirebase } from "../Firebase";
+import { withFirebase } from "../../Firebase";
 
 const needsEmailVerification = (authUser: any) =>
   authUser &&
