@@ -46,5 +46,6 @@
   "Not Ok": "Not Ok",
   "Air & Soil Humidity": "Air & Soil Humidity",
   "Time outputs where ON in minutes": "Time outputs where ON in minutes",
-  "ON/OFF status of outputs": "ON/OFF status of outputs"
+  "ON/OFF status of outputs": "ON/OFF status of outputs",
+  "Current State": "Current State"
 }

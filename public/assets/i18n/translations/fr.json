@@ -46,5 +46,6 @@
   "Not Ok": "Pas Ok",
   "Air & Soil Humidity": "Humidité de l'air et du sol",
   "Time outputs where ON in minutes": "Durée pour laquelle les sorties étaient allumées en minutes",
-  "ON/OFF status of outputs": "Status ON/OFF des sorties"
+  "ON/OFF status of outputs": "Status ON/OFF des sorties",
+  "Current State": "Etat actuel"
 }

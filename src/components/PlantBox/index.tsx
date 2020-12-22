@@ -121,7 +121,7 @@ const PlantBox = (props: any) => {
           className="menu-item"
           onClick={() => setPage(Page.Current)}
         >
-          Current State
+          {t("Current State")}
         </div>
         <div
           id="graphs"
