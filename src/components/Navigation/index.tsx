@@ -12,9 +12,15 @@ interface NavigationProps {
 }
 const renderNagationbar: any = (authUser: any) => {
   return authUser ? (
-    <NavigationAuth authUser={authUser} />
+    <div>
+      <NavigationAuth authUser={authUser} />
+      <div className="spacer">&nbsp;</div>
+    </div>
   ) : (
-    <NavigationNonAuth />
+    <div>
+      <NavigationNonAuth />
+      <div className="spacer">&nbsp;</div>
+    </div>
   );
 };
 

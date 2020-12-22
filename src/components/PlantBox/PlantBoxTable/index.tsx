@@ -92,9 +92,12 @@ const MeasureTable = (props: MeasurTableProps) => {
   ];
   const ready = !loading;
   return (
-    <div className="center margin-figure">
+    <div className="center margin-figure height100">
       {ready && (
-        <Table data={dataToString(data)} columns={columns} tableHeight={400} />
+        <>
+          <div className="title">Datas</div>
+          <Table data={dataToString(data)} columns={columns} />
+        </>
       )}
     </div>
   );

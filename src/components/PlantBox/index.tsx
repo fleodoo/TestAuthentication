@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { compose } from "recompose";
 import { useTranslation } from "react-i18next";
+import { slide as Menu } from "react-burger-menu";
 import {
   withAuthorization,
   withEmailVerification,
@@ -12,8 +13,16 @@ import MeasureGraphHumidity from "./PlantBoxGraphHumidity";
 import MeasureGraphTemperature from "./PlantBoxGraphTemperature";
 import MeasureGraphOutputs from "./PlantBoxGraphOutputs";
 
+enum Page {
+  Graphs,
+  Data,
+  Current,
+  Settings,
+}
 interface PlantBoxState {
   loading: boolean;
+  menuOpen: boolean;
+  page: Page;
   data: Data[];
 }
 
@@ -32,7 +41,9 @@ export interface Data {
 
 const initState = (): PlantBoxState => {
   return {
+    menuOpen: false,
     loading: false,
+    page: Page.Current,
     data: [],
   };
 };
@@ -69,9 +80,10 @@ const PlantBox = (props: any) => {
           fanChange,
         };
       });
-      console.log(data);
       setState({
         data,
+        menuOpen: false,
+        page: Page.Current,
         loading: false,
       });
     });
@@ -80,15 +92,65 @@ const PlantBox = (props: any) => {
     };
   }, [props.firebase]);
 
-  const { loading, data } = state;
+  const setPage = (page: Page) => {
+    setState((prevState: PlantBoxState) => ({
+      ...prevState,
+      page,
+      menuOpen: false,
+    }));
+  };
+
+  const handleOnOpen = () => {
+    setState((prevState: PlantBoxState) => ({
+      ...prevState,
+      menuOpen: true,
+    }));
+  };
+  const handleOnClose = () => {
+    setState((prevState: PlantBoxState) => ({
+      ...prevState,
+      menuOpen: false,
+    }));
+  };
+  const { page, loading, data, menuOpen } = state;
   return (
-    <div>
-      <h1 className="center">{t("PlantBox")}</h1>
-      {loading && <div>{t("Loading")}...</div>}
-      <MeasureTable loading={loading} data={data} />
-      <MeasureGraphTemperature loading={loading} data={data} />
-      <MeasureGraphHumidity loading={loading} data={data} />
-      <MeasureGraphOutputs loading={loading} data={data} />
+    <div className="plantbox">
+      <Menu onOpen={handleOnOpen} isOpen={menuOpen} onClose={handleOnClose}>
+        <div
+          id="current"
+          className="menu-item"
+          onClick={() => setPage(Page.Current)}
+        >
+          Current State
+        </div>
+        <div
+          id="graphs"
+          className="menu-item"
+          onClick={() => setPage(Page.Graphs)}
+        >
+          Graphs
+        </div>
+        <div id="data" className="menu-item" onClick={() => setPage(Page.Data)}>
+          Data
+        </div>
+        <div
+          id="settings"
+          className="menu-item"
+          onClick={() => setPage(Page.Settings)}
+        >
+          Settings
+        </div>
+      </Menu>
+      {page === Page.Current && <div className="center">test</div>}
+      {page === Page.Graphs && (
+        <>
+          <div className="title">Graphs</div>
+          <MeasureGraphTemperature loading={loading} data={data} />
+          <MeasureGraphHumidity loading={loading} data={data} />
+          <MeasureGraphOutputs loading={loading} data={data} />
+        </>
+      )}
+      {page === Page.Data && <MeasureTable loading={loading} data={data} />}
     </div>
   );
 };

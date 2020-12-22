@@ -169,7 +169,7 @@ const MeasureGraphOutputs = (props: MeasureGraphProps) => {
   return (
     <>
       {ready && (
-        <div className="center margin-figure">
+        <div className="center margin-figure padding-bottom">
           {state.cumulative && (
             <Paper>
               <Chart data={ProcessedData}>
