@@ -39,9 +39,6 @@ const NavigationAuth = (props: NavigationProps) => {
       <Link className="link" to={ROUTES.LANDING}>
         {t("Home")}
       </Link>
-      {/* <Link className="link" to={ROUTES.HOME}>
-        Home
-      </Link> */}
       {!!props.authUser.roles[ROLES.ADMIN] && (
         <>
           <Link className="link" to={ROUTES.PLANT}>

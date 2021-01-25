@@ -1,8 +1,10 @@
 import app from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
+import AwesomeDebouncePromise from "awesome-debounce-promise";
 
 import * as ROLES from "../../constants/roles";
+import { Data } from "../PlantBox";
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -112,6 +114,23 @@ class Firebase {
   user = (uid: string) => this.db.ref(`users/${uid}`);
   users = () => this.db.ref("users");
   measures = () => this.db.ref("measures");
+  addMeasure = (data: Data) => {
+    const time = (data.time.getTime() / 1000).toFixed(0);
+    const formatedData = {
+      humAir: data.airHumidity.toString(),
+      humGround: data.soilHumidity.toString(),
+      lamp1: data.bigLamp,
+      lamp2: data.smallLamp,
+      pompe: data.pompe,
+      temp: data.temperature.toString(),
+      time,
+      vantilo1: data.fanWind,
+      vantilo2: data.fanChange,
+      waterVolume: data.waterVolume,
+    };
+    this.db.ref("measures/" + time).set(formatedData);
+  };
+  addMeasureDebounced = AwesomeDebouncePromise(this.addMeasure, 2000);
 }
 
 export default Firebase;

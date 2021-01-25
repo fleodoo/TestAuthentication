@@ -385,3 +385,43 @@ Note: Beware of modifying this element as it can break the animations - you shou
 .bm-overlay {
   background: rgba(0, 0, 0, 0.3);
 }
+
+.pb-measures {
+  background-color: white;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  .pb-measure {
+    display: inline;
+    font-size: 21px;
+    text-align: center;
+    padding: 1%;
+  }
+}
+.pb-motors {
+  margin-top: 1%;
+  background-color: white;
+  display: grid;
+  grid-template-columns: auto auto;
+  .pb-motor {
+    display: inline;
+    font-size: 18px;
+    text-align: left;
+    padding: 1%;
+    .pb-motor-name {
+      font-size: 21px;
+    }
+  }
+}
+
+.pb-graph-timestamp {
+  display: flex;
+  margin-left: 5%;
+  margin-bottom: 2%;
+  .pb-graph-timestamp-label {
+    margin-right: 2%;
+  }
+}
+
+.daterangepickercontainer {
+  width: 225px;
+}

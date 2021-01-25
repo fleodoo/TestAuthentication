@@ -87,7 +87,7 @@ const MeasureTable = (props: MeasurTableProps) => {
     {
       key: "fanChange",
       header: t("Fan Change"),
-      width: 100,
+      width: 140,
     },
   ];
   const ready = !loading;

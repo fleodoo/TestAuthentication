@@ -7,6 +7,8 @@
     "@devexpress/dx-react-chart-material-ui": "^2.7.3",
     "@devexpress/dx-react-core": "^2.7.3",
     "@material-ui/core": "^4.11.2",
+    "@material-ui/icons": "^4.11.2",
+    "@react-native-firebase/app": "^8.4.6",
     "@react-native-firebase/auth": "^9.3.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -19,17 +21,22 @@
     "@types/react-router-dom": "^5.1.6",
     "@types/react-window": "^1.8.2",
     "@types/recompose": "^0.30.7",
+    "@wojtekmaj/react-datetimerange-picker": "^3.0.0",
+    "awesome-debounce-promise": "^2.1.0",
     "firebase": "^7.24.0",
     "i18next": "^19.8.3",
     "i18next-xhr-backend": "^3.2.2",
     "moment": "^2.29.1",
     "object-path": "^0.11.5",
-    "pondjs": "^0.9.0",
+    "pondjs": "^0.8.10",
     "react": "^16.14.0",
+    "react-advanced-datetimerange-picker": "^1.0.13",
     "react-burger-menu": "^3.0.2",
+    "react-datetime-picker": "^3.0.4",
     "react-dom": "^16.14.0",
     "react-fluid-table": "^0.4.2",
     "react-i18next": "^11.7.3",
+    "react-native": "^0.63.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.0",
     "react-timeseries-charts": "^0.16.1",
@@ -60,7 +67,10 @@
     ]
   },
   "devDependencies": {
+    "@types/d3-shape": "^2.0.0",
+    "@types/react-bootstrap": "^0.32.25",
     "@types/react-burger-menu": "^2.6.2",
+    "@types/wojtekmaj__react-datetimerange-picker": "^3.0.0",
     "sass": "^1.28.0"
   }
 }

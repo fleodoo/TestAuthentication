@@ -9,9 +9,8 @@ import {
 import * as ROLES from "../../constants/roles";
 import { withFirebase } from "../Firebase";
 import MeasureTable from "./PlantBoxTable";
-import MeasureGraphHumidity from "./PlantBoxGraphHumidity";
-import MeasureGraphTemperature from "./PlantBoxGraphTemperature";
-import MeasureGraphOutputs from "./PlantBoxGraphOutputs";
+import PlantBoxCurrentState from "./PlantBoxCurrentState";
+import PlantBoxGraphs from "./PlantBoxGraphs";
 
 enum Page {
   Graphs,
@@ -24,6 +23,7 @@ interface PlantBoxState {
   menuOpen: boolean;
   page: Page;
   data: Data[];
+  current: Data | undefined;
 }
 
 export interface Data {
@@ -31,24 +31,25 @@ export interface Data {
   airHumidity: number;
   soilHumidity: number;
   temperature: number;
-  waterVolume: Boolean;
-  bigLamp: Boolean;
-  smallLamp: Boolean;
-  pompe: Boolean;
-  fanWind: Boolean;
-  fanChange: Boolean;
+  waterVolume: boolean;
+  bigLamp: boolean;
+  smallLamp: boolean;
+  pompe: boolean;
+  fanWind: boolean;
+  fanChange: boolean;
 }
 
-const initState = (): PlantBoxState => {
-  return {
-    menuOpen: false,
-    loading: false,
-    page: Page.Current,
-    data: [],
-  };
-};
-
 const PlantBox = (props: any) => {
+  const initState = (): PlantBoxState => {
+    return {
+      menuOpen: false,
+      loading: false,
+      page: Page.Current,
+      data: [],
+      current: undefined,
+    };
+  };
+
   const { t } = useTranslation();
   const [state, setState] = useState<PlantBoxState>(initState());
 
@@ -80,12 +81,13 @@ const PlantBox = (props: any) => {
           fanChange,
         };
       });
-      setState({
+      const [lastItem] = data.slice(-1);
+      setState((prevState: PlantBoxState) => ({
+        ...prevState,
         data,
-        menuOpen: false,
-        page: Page.Current,
+        current: lastItem,
         loading: false,
-      });
+      }));
     });
     return () => {
       props.firebase.measures().off();
@@ -112,44 +114,46 @@ const PlantBox = (props: any) => {
       menuOpen: false,
     }));
   };
-  const { page, loading, data, menuOpen } = state;
+  const { current, page, loading, data, menuOpen } = state;
   return (
     <div className="plantbox">
-      <Menu onOpen={handleOnOpen} isOpen={menuOpen} onClose={handleOnClose}>
-        <div
-          id="current"
-          className="menu-item"
-          onClick={() => setPage(Page.Current)}
-        >
-          {t("Current State")}
-        </div>
-        <div
-          id="graphs"
-          className="menu-item"
-          onClick={() => setPage(Page.Graphs)}
-        >
-          Graphs
-        </div>
-        <div id="data" className="menu-item" onClick={() => setPage(Page.Data)}>
-          Data
-        </div>
-        <div
-          id="settings"
-          className="menu-item"
-          onClick={() => setPage(Page.Settings)}
-        >
-          Settings
-        </div>
-      </Menu>
-      {page === Page.Current && <div className="center">test</div>}
-      {page === Page.Graphs && (
-        <>
-          <div className="title">Graphs</div>
-          <MeasureGraphTemperature loading={loading} data={data} />
-          <MeasureGraphHumidity loading={loading} data={data} />
-          <MeasureGraphOutputs loading={loading} data={data} />
-        </>
+      {!loading && (
+        <Menu onOpen={handleOnOpen} isOpen={menuOpen} onClose={handleOnClose}>
+          <div
+            id="current"
+            className="menu-item"
+            onClick={() => setPage(Page.Current)}
+          >
+            {t("Current State")}
+          </div>
+          <div
+            id="graphs"
+            className="menu-item"
+            onClick={() => setPage(Page.Graphs)}
+          >
+            {t("Graphs")}
+          </div>
+          <div
+            id="data"
+            className="menu-item"
+            onClick={() => setPage(Page.Data)}
+          >
+            {t("Data")}
+          </div>
+          <div
+            id="settings"
+            className="menu-item"
+            onClick={() => setPage(Page.Settings)}
+          >
+            {t("Settings")}
+          </div>
+        </Menu>
       )}
+      {
+        //@ts-ignore
+        page === Page.Current && <PlantBoxCurrentState currentState={current} />
+      }
+      {page === Page.Graphs && <PlantBoxGraphs loading={loading} data={data} />}
       {page === Page.Data && <MeasureTable loading={loading} data={data} />}
     </div>
   );
