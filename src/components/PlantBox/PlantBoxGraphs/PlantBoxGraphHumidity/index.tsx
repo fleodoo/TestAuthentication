@@ -1,25 +1,20 @@
-import { useTranslation } from "react-i18next";
-import React, { useEffect, useState } from "react";
-import Paper from "@material-ui/core/Paper";
+import { ArgumentScale, EventTracker } from "@devexpress/dx-react-chart";
 import {
-  Chart,
-  ArgumentAxis,
-  ValueAxis,
-  LineSeries,
-  Tooltip,
-  Legend,
-  Title,
-  ZoomAndPan,
+  ArgumentAxis, Chart,
+  Legend, LineSeries,
+  Title, Tooltip, ValueAxis,
+  ZoomAndPan
 } from "@devexpress/dx-react-chart-material-ui";
+import Paper from "@material-ui/core/Paper";
 import { scaleTime } from "d3-scale";
-import { EventTracker } from "@devexpress/dx-react-chart";
-import { ArgumentScale } from "@devexpress/dx-react-chart";
-import { Data } from "../..";
 import { Moment } from "moment";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Measure } from "../..";
 
 interface MeasureGraphProps {
   loading: boolean;
-  data: Data[];
+  data: Measure[];
   start: Moment;
   end: Moment;
 }
@@ -68,7 +63,6 @@ const MeasureGraphHumidity = (props: MeasureGraphProps) => {
         valueEnd: maximum + 0.1,
       };
     }
-
     setState((prevState: any) => ({
       ...prevState,
       viewport,

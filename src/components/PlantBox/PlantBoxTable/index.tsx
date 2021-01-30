@@ -1,11 +1,12 @@
-import { useTranslation } from "react-i18next";
-import { Data } from "..";
-import { Table } from "react-fluid-table";
 import React from "react";
+import { Table } from "react-fluid-table";
+import { useTranslation } from "react-i18next";
+import { Measure, Output } from "..";
 
 interface MeasurTableProps {
   loading: boolean;
-  data: any;
+  measures: any;
+  outputs: any;
 }
 
 interface DataString {
@@ -14,6 +15,9 @@ interface DataString {
   airHumidity: string;
   soilHumidity: string;
   waterVolume: string;
+}
+interface OutputString {
+  time: string;
   bigLamp: string;
   smallLamp: string;
   pompe: string;
@@ -22,13 +26,18 @@ interface DataString {
 }
 
 const MeasureTable = (props: MeasurTableProps) => {
-  const dataToString = (datas: Data[]): DataString[] => {
+  const measuresToString = (datas: Measure[]): DataString[] => {
     return datas.map((data) => ({
       time: data.time.toLocaleString(),
       temperature: data.temperature.toString(),
       airHumidity: data.airHumidity.toString(),
       soilHumidity: data.soilHumidity.toString(),
       waterVolume: data.waterVolume ? t("Ok") : t("Not Ok"),
+    }));
+  };
+  const outputsToString = (datas: Output[]): OutputString[] => {
+    return datas.map((data) => ({
+      time: data.time.toLocaleString(),
       bigLamp: data.bigLamp ? "On" : "Off",
       smallLamp: data.smallLamp ? "On" : "Off",
       pompe: data.pompe ? "On" : "Off",
@@ -37,8 +46,8 @@ const MeasureTable = (props: MeasurTableProps) => {
     }));
   };
   const { t } = useTranslation();
-  const { loading, data } = props;
-  const columns: any = [
+  const { loading, measures, outputs } = props;
+  const columnsData: any = [
     {
       key: "time",
       header: t("Time"),
@@ -47,7 +56,7 @@ const MeasureTable = (props: MeasurTableProps) => {
     {
       key: "temperature",
       header: t("Temperature"),
-      width: 150,
+      width: 130,
     },
     {
       key: "airHumidity",
@@ -64,6 +73,13 @@ const MeasureTable = (props: MeasurTableProps) => {
       header: t("Has Water"),
       width: 150,
     },
+  ];
+  const columnsOutputs: any = [
+    {
+      key: "time",
+      header: t("Time"),
+      width: 200,
+    },
     {
       key: "bigLamp",
       header: t("Big Lamp"),
@@ -72,17 +88,17 @@ const MeasureTable = (props: MeasurTableProps) => {
     {
       key: "smallLamp",
       header: t("Small Lamp"),
-      width: 150,
+      width: 130,
     },
     {
       key: "pompe",
       header: t("Pump"),
-      width: 150,
+      width: 100,
     },
     {
       key: "fanWind",
       header: t("Fan Wind"),
-      width: 150,
+      width: 110,
     },
     {
       key: "fanChange",
@@ -94,10 +110,20 @@ const MeasureTable = (props: MeasurTableProps) => {
   return (
     <div className="center margin-figure height100">
       {ready && (
-        <>
-          <div className="title">Datas</div>
-          <Table data={dataToString(data)} columns={columns} />
-        </>
+        <div className="flex height100">
+          <div className="width50 height100">
+            <div className="title">Measures</div>
+              <div className="table">
+                <Table data={measuresToString(measures)} columns={columnsData} />
+              </div>
+            </div >
+          <div className="width50 height100">
+            <div className="title">Motors</div>
+              <div className="table">
+                <Table data={outputsToString(outputs)} columns={columnsOutputs} />
+              </div>
+            </div>
+        </div>
       )}
     </div>
   );

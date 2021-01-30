@@ -1,94 +1,95 @@
-import { useTranslation } from "react-i18next";
-import React, { useEffect, useState } from "react";
-import { Data } from "..";
 import { Switch } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { compose } from "recompose";
+import { Output } from "..";
 import { withFirebase } from "../../Firebase";
 
 interface CurrentState {
-  data: Data | undefined;
+  currentOutput: any;
+  currentMeasure: any;
 }
 
 const PlantBoxCurrentState = (props: any) => {
   const { t } = useTranslation();
   const [currentState, setCurrentState] = useState<CurrentState>({
-    data: undefined,
+    currentOutput: undefined,
+    currentMeasure: undefined,
   });
 
   useEffect(() => {
-    if (props.currentState) {
-      setCurrentState({ data: { ...props.currentState } });
+    if (props.currentMeasure && props.currentOutput) {
+      setCurrentState({ currentMeasure: props.currentMeasure, currentOutput: props.currentOutput })
     }
-  }, [props.currentState]);
+  }, [props.currentMeasure, props.currentOutput]);
 
-  const updateState = (key: "passbigLamp" | "fanWind", value: boolean) => {
-    if (!currentState.data) {
+  const updateState = (key: "bigLamp" | "fanWind" | "smallLamp" | "fanChange" | "pump", value: boolean) => {
+    if (!currentState.currentOutput) {
       return;
     }
-    const newData: Data = {
-      ...currentState.data,
+    const newData: Output = {
+      ...currentState.currentOutput,
       [key]: value,
       time: new Date(Date.now()),
     };
     setCurrentState((prevState: CurrentState) => ({
       ...prevState,
-      data: newData,
+      currentOutput: newData,
     }));
-    props.firebase.addMeasureDebounced(newData);
+    props.firebase.changeOutputDebounced(newData);
   };
-
   return (
     <div className="center margin-figure height100">
       <div className="title">{t("Current State")}</div>
-      {props.currentState ? (
+      {props.currentOutput && props.currentMeasure ? (
         <>
           <div className="pb-measures">
             <Measure
               name={t("Temperature")}
-              value={props.currentState.temperature.toString() + "°C"}
+              value={props.currentMeasure.temperature.toString() + "°C"}
             />
             <Measure
               name={t("Air Humidity")}
-              value={(props.currentState.airHumidity * 100).toString() + "%"}
+              value={(props.currentMeasure.airHumidity).toString() + "%"}
             />
             <Measure
               name={t("Soil Humidity")}
-              value={(props.currentState.soilHumidity * 100).toString() + "%"}
+              value={(props.currentMeasure.soilHumidity).toString() + "%"}
             />
             <Measure
               name={t("Water Volume")}
-              value={props.currentState.waterVolume ? t("Ok") : t("Not Ok")}
+              value={props.currentMeasure.waterVolume ? t("Ok") : t("Not Ok")}
             />
           </div>
           <div className="pb-motors">
             <Motor
               id="bigLamp"
               name={t("Big Lamp")}
-              value={props.currentState.bigLamp}
+              value={props.currentOutput.bigLamp}
               newValue={updateState}
             />
             <Motor
               id="fanWind"
               name={t("Fan Wind")}
-              value={props.currentState.fanWind}
+              value={props.currentOutput.fanWind}
               newValue={updateState}
             />
             <Motor
               id="smallLamp"
               name={t("Small Lamp")}
-              value={props.currentState.smallLamp}
+              value={props.currentOutput.smallLamp}
               newValue={updateState}
             />
             <Motor
               id="fanChange"
               name={t("Fan Change")}
-              value={props.currentState.fanChange}
+              value={props.currentOutput.fanChange}
               newValue={updateState}
             />
             <Motor
               id="pompe"
               name={t("Pump")}
-              value={props.currentState.pompe}
+              value={props.currentOutput.pompe}
               newValue={updateState}
             />
           </div>

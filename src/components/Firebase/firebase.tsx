@@ -1,10 +1,10 @@
+import AwesomeDebouncePromise from "awesome-debounce-promise";
 import app from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
-import AwesomeDebouncePromise from "awesome-debounce-promise";
-
 import * as ROLES from "../../constants/roles";
-import { Data } from "../PlantBox";
+import { Output } from "../PlantBox";
+
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -114,23 +114,19 @@ class Firebase {
   user = (uid: string) => this.db.ref(`users/${uid}`);
   users = () => this.db.ref("users");
   measures = () => this.db.ref("measures");
-  addMeasure = (data: Data) => {
-    const time = (data.time.getTime() / 1000).toFixed(0);
+  outputs = () => this.db.ref("outputs");
+  changeOutput = (output: Output) => {
+    const time = (output.time.getTime() / 1000).toFixed(0);
     const formatedData = {
-      humAir: data.airHumidity.toString(),
-      humGround: data.soilHumidity.toString(),
-      lamp1: data.bigLamp,
-      lamp2: data.smallLamp,
-      pompe: data.pompe,
-      temp: data.temperature.toString(),
-      time,
-      vantilo1: data.fanWind,
-      vantilo2: data.fanChange,
-      waterVolume: data.waterVolume,
+      vantilo1: output.fanWind,
+      vantilo2: output.fanChange,
+      lamp1: output.bigLamp,
+      lamp2: output.smallLamp,
+      pompe: output.pompe,
     };
-    this.db.ref("measures/" + time).set(formatedData);
+    this.db.ref("outputs/" + time).set(formatedData);
   };
-  addMeasureDebounced = AwesomeDebouncePromise(this.addMeasure, 2000);
+  changeOutputDebounced = AwesomeDebouncePromise(this.changeOutput, 2000);
 }
 
 export default Firebase;

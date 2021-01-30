@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { compose } from "recompose";
-import { useTranslation } from "react-i18next";
 import { slide as Menu } from "react-burger-menu";
+import { useTranslation } from "react-i18next";
+import { compose } from "recompose";
+import * as ROLES from "../../constants/roles";
 import {
   withAuthorization,
-  withEmailVerification,
+  withEmailVerification
 } from "../Authentication/Session";
-import * as ROLES from "../../constants/roles";
 import { withFirebase } from "../Firebase";
-import MeasureTable from "./PlantBoxTable";
 import PlantBoxCurrentState from "./PlantBoxCurrentState";
 import PlantBoxGraphs from "./PlantBoxGraphs";
+import MeasureTable from "./PlantBoxTable";
 
 enum Page {
   Graphs,
@@ -22,16 +22,21 @@ interface PlantBoxState {
   loading: boolean;
   menuOpen: boolean;
   page: Page;
-  data: Data[];
-  current: Data | undefined;
+  measures: Measure[];
+  outputs: Output[];
+  currentMeasure: Measure | undefined;
+  currentOutput: Output | undefined;
 }
 
-export interface Data {
+export interface Measure {
   time: Date;
   airHumidity: number;
   soilHumidity: number;
   temperature: number;
   waterVolume: boolean;
+}
+export interface Output {
+  time: Date;
   bigLamp: boolean;
   smallLamp: boolean;
   pompe: boolean;
@@ -45,8 +50,10 @@ const PlantBox = (props: any) => {
       menuOpen: false,
       loading: false,
       page: Page.Current,
-      data: [],
-      current: undefined,
+      measures: [],
+      outputs: [],
+      currentMeasure: undefined,
+      currentOutput: undefined,
     };
   };
 
@@ -57,12 +64,31 @@ const PlantBox = (props: any) => {
     setState((prevState: PlantBoxState) => ({ ...prevState, loading: true }));
     props.firebase.measures().on("value", (snapshot: any) => {
       const measuresObject = snapshot.val();
-      const data: Data[] = Object.keys(measuresObject).map((key) => {
+      const data: Measure[] = Object.keys(measuresObject).map((key) => {
         const time = new Date(parseInt(key) * 1000);
         const temperature = parseFloat(measuresObject[key].temp);
         const airHumidity = parseFloat(measuresObject[key].humAir);
         const soilHumidity = parseFloat(measuresObject[key].humGround);
         const waterVolume = Boolean(measuresObject[key].waterVolume);
+        return {
+          time,
+          temperature,
+          airHumidity,
+          soilHumidity,
+          waterVolume,
+        };
+      });
+      const [lastMeasure] = data.slice(-1);
+      setState((prevState: PlantBoxState) => ({
+        ...prevState,
+        measures:data,
+        currentMeasure: lastMeasure,
+      }));
+    });
+    props.firebase.outputs().on("value", (snapshot: any) => {
+      const measuresObject = snapshot.val();
+      const data: Output[] = Object.keys(measuresObject).map((key) => {
+        const time = new Date(parseInt(key) * 1000);
         const bigLamp = Boolean(measuresObject[key].lamp1);
         const smallLamp = Boolean(measuresObject[key].lamp2);
         const pompe = Boolean(measuresObject[key].pompe);
@@ -70,10 +96,6 @@ const PlantBox = (props: any) => {
         const fanChange = Boolean(measuresObject[key].vantilo2);
         return {
           time,
-          temperature,
-          airHumidity,
-          soilHumidity,
-          waterVolume,
           bigLamp,
           smallLamp,
           pompe,
@@ -81,16 +103,17 @@ const PlantBox = (props: any) => {
           fanChange,
         };
       });
-      const [lastItem] = data.slice(-1);
+      const [lastOutput] = data.slice(-1);;
       setState((prevState: PlantBoxState) => ({
         ...prevState,
-        data,
-        current: lastItem,
+        outputs:data,
+        currentOutput: lastOutput,
         loading: false,
       }));
     });
     return () => {
       props.firebase.measures().off();
+      props.firebase.outputs().off();
     };
   }, [props.firebase]);
 
@@ -114,7 +137,7 @@ const PlantBox = (props: any) => {
       menuOpen: false,
     }));
   };
-  const { current, page, loading, data, menuOpen } = state;
+  const { currentMeasure, currentOutput, page, loading, measures, outputs, menuOpen } = state;
   return (
     <div className="plantbox">
       {!loading && (
@@ -151,14 +174,14 @@ const PlantBox = (props: any) => {
       )}
       {
         //@ts-ignore
-        page === Page.Current && <PlantBoxCurrentState currentState={current} />
+        page === Page.Current && <PlantBoxCurrentState currentMeasure={currentMeasure} currentOutput={currentOutput}/>
       }
-      {page === Page.Graphs && <PlantBoxGraphs loading={loading} data={data} />}
-      {page === Page.Data && <MeasureTable loading={loading} data={data} />}
+      {page === Page.Graphs && <PlantBoxGraphs loading={loading} measures={measures} outputs={outputs}/>}
+      {page === Page.Data && <MeasureTable loading={loading} measures={measures} outputs={outputs}/>}
     </div>
   );
 };
-
+  
 const condition = (authUser: any) => authUser && !!authUser.roles[ROLES.ADMIN];
 export default compose(
   withEmailVerification,

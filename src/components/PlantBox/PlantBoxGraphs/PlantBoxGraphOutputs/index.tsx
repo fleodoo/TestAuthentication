@@ -1,29 +1,26 @@
-import { useTranslation } from "react-i18next";
-import React, { ReactElement, useState } from "react";
-import Paper from "@material-ui/core/Paper";
+import { ArgumentScale, EventTracker } from "@devexpress/dx-react-chart";
 import {
-  Chart,
-  ArgumentAxis,
-  ValueAxis,
-  LineSeries,
-  Tooltip,
-  Legend,
-  Title,
-  ZoomAndPan,
+  ArgumentAxis, Chart,
+  Legend, LineSeries,
+  Title, Tooltip, ValueAxis,
+  ZoomAndPan
 } from "@devexpress/dx-react-chart-material-ui";
-import { scaleTime } from "d3-scale";
-import { line, curveStep } from "d3-shape";
-import { EventTracker } from "@devexpress/dx-react-chart";
-import { ArgumentScale } from "@devexpress/dx-react-chart";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { FormGroup } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
-import { Data } from "../..";
-import moment from "moment";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Paper from "@material-ui/core/Paper";
+import { scaleTime } from "d3-scale";
+import { curveStep, line } from "d3-shape";
+import moment, { Moment } from "moment";
+import React, { ReactElement, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Output } from "../..";
 
 interface MeasureGraphProps {
   loading: boolean;
-  data: Data[];
+  outputs: Output[];
+  start: Moment;
+  end: Moment;
 }
 
 interface ProcessedData {
@@ -34,30 +31,26 @@ interface ProcessedData {
   fanWind: number;
   fanChange: number;
 }
-interface GraphState {
-  data: Data[];
-  targetItem: any;
-  zoomValue: boolean;
-  zoomArgument: boolean;
+interface GraphContainerState {
   cumulative: boolean;
 }
 
-const initState = (): GraphState => {
+const initState = (): GraphContainerState => {
   return {
-    targetItem: undefined,
-    data: [],
-    zoomArgument: true,
-    zoomValue: false,
     cumulative: false,
   };
 };
 
 const MeasureGraphOutputs = (props: MeasureGraphProps) => {
   const { t } = useTranslation();
-  const [state, setState] = useState<GraphState>(initState());
-  const { loading, data } = props;
-
-  const processData = (datas: Data[]): ProcessedData[] => {
+  const [state, setState] = useState<GraphContainerState>(initState());
+  const { loading } = props;
+  const toggleCumulative = () => {
+    setState({
+      cumulative: !state.cumulative
+    })
+  };
+  const processData = (datas: Output[]): ProcessedData[] => {
     const processData: ProcessedData[] = [];
     let bigLamp: number = 0;
     let smallLamp: number = 0;
@@ -67,19 +60,26 @@ const MeasureGraphOutputs = (props: MeasureGraphProps) => {
     for (var i = 0; i < datas.length + 1; i += 1) {
       if (!state.cumulative) {
         if (i < datas.length) {
-          bigLamp = datas[i].bigLamp ? 1 : 0;
-          smallLamp = datas[i].smallLamp ? 1 : 0;
-          pompe = datas[i].pompe ? 1 : 0;
-          fanWind = datas[i].fanWind ? 1 : 0;
-          fanChange = datas[i].fanChange ? 1 : 0;
+          bigLamp = datas[i].bigLamp ? 0.1 : 0;
+          smallLamp = datas[i].smallLamp ? 0.3 : 0.2;
+          pompe = datas[i].pompe ? 0.5 : 0.4;
+          fanWind = datas[i].fanWind ? 0.7 : 0.6;
+          fanChange = datas[i].fanChange ? 0.9 : 0.8;
+        }
+        if (i === datas.length) {
+          const lastElement = datas.slice(-1)[0] 
+          bigLamp = lastElement.bigLamp ? 0.1 : 0;
+          smallLamp = lastElement.smallLamp ? 0.3 : 0.2;
+          pompe = lastElement.pompe ? 0.5 : 0.4;
+          fanWind = lastElement.fanWind ? 0.7 : 0.6;
+          fanChange = lastElement.fanChange ? 0.9 : 0.8;
         }
       } else {
         const currentTime =
-          i === datas.length ? moment().unix() : datas[i].time.getTime();
+          i === datas.length ? (moment().unix()*1000) : datas[i].time.getTime();
         const previousTime =
           i === 0 ? datas[i].time.getTime() : datas[i - 1].time.getTime();
         const deltaTime = (currentTime - previousTime) / 60000;
-        console.log(deltaTime);
         if (i === 0) {
           bigLamp = 0;
           smallLamp = 0;
@@ -105,9 +105,9 @@ const MeasureGraphOutputs = (props: MeasureGraphProps) => {
           pompe,
           fanWind,
           fanChange,
-          time: data[i].time,
+          time: datas[i].time,
         });
-      } else if (i === datas.length && state.cumulative) {
+      } else if (i === datas.length) {
         processData.push({
           bigLamp,
           smallLamp,
@@ -120,92 +120,120 @@ const MeasureGraphOutputs = (props: MeasureGraphProps) => {
     }
     return processData;
   };
-  const inputsContainerStyle = { justifyContent: "center" };
-  const ProcessedData = processData(data);
-  const ready = !loading;
-  const changeTargetItem = (targetItem: any) =>
-    setState({ ...state, targetItem });
-
-  const submit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.target.id as "zoomArgument" | "zoomValue" | "cumulative";
-    setState({
-      ...state,
-      [e.target.id]: e.target.checked,
-    });
+  const processedData = processData(props.outputs);
+  const getViewPort = (data: ProcessedData[]) => {
+    const filtered = data.filter(
+      (m:ProcessedData) =>
+      m.time.getTime() >= props.start.unix() * 1000 &&
+      m.time.getTime() <= props.end.unix() * 1000
+    );
+    if (!filtered.length) {
+      return {
+        argumentStart: props.start.toDate(),
+        argumentEnd: props.end.toDate(),
+        valueStart: 0,
+        valueEnd: 1,
+      };
+    }
+    const lastIndex = filtered.length - 1;
+    let minValue = 0
+    let maxValue = 1
+    if (state.cumulative) {
+      minValue = Infinity
+      maxValue = -Infinity
+      filtered.forEach(el => {
+        minValue = Math.min(
+          el.bigLamp,
+          el.fanChange,
+          el.fanWind,
+          el.pompe,
+          el.smallLamp
+        );
+        maxValue = Math.max(
+          el.bigLamp,
+          el.fanChange,
+          el.fanWind,
+          el.pompe,
+          el.smallLamp
+        );
+      });
+    }
+    return {
+      argumentStart: props.start.toDate(),
+      argumentEnd: filtered[lastIndex].time,
+      valueStart: minValue,
+      valueEnd: maxValue,
+    };
   };
+
+  const ready = !loading;
 
   const getTitle = () => {
     return state.cumulative
       ? t("Time outputs where ON in minutes")
       : t("ON/OFF status of outputs");
   };
-  const getMode = (zoom: boolean) => {
-    return zoom ? "both" : "pan";
-  };
 
-  const Line = (props: any) => (
-    <LineSeries.Path
-      {...props}
-      path={line()
-        .x(({ arg }: any) => arg)
-        .y(({ val }: any) => val)
-        .curve(curveStep)}
-    />
+  return (
+    <>
+      {ready && (
+        <div className="center margin-figure padding-bottom">
+          <GraphComponent title={getTitle()} data={processedData} viewport={getViewPort(processedData)} isCumulative={state.cumulative} callBackFunction={toggleCumulative}/>
+        </div>
+      )}
+    </>
   );
+};
 
-  const getViewPort = (data: ProcessedData[], cumulative: boolean) => {
-    if (!data.length) {
-      return {
-        argumentStart: 0,
-        argumentEnd: 0,
-        valueStart: 0,
-        valueEnd: 0,
-      };
-    }
-    const lastIndex = data.length - 1;
-    const firstIndex = 0;
-    if (cumulative) {
-      const minValue = Math.min(
-        data[firstIndex].bigLamp,
-        data[firstIndex].fanChange,
-        data[firstIndex].fanWind,
-        data[firstIndex].pompe,
-        data[firstIndex].smallLamp
-      );
-      const maxValue = Math.max(
-        data[lastIndex].bigLamp,
-        data[lastIndex].fanChange,
-        data[lastIndex].fanWind,
-        data[lastIndex].pompe,
-        data[lastIndex].smallLamp
-      );
-      return {
-        argumentStart: data[firstIndex].time,
-        argumentEnd: data[lastIndex].time,
-        valueStart: minValue,
-        valueEnd: maxValue,
-      };
-    } else {
-      return {
-        argumentStart: data[firstIndex].time,
-        argumentEnd: data[lastIndex].time,
-        valueStart: 0,
-        valueEnd: 1,
-      };
-    }
+interface GraphComponentProps{
+  isCumulative: boolean
+  title: string;
+  data: ProcessedData[];
+  viewport: {};
+  callBackFunction: () => void;
+}
+
+interface GraphState{
+  targetItem: any;
+}
+
+interface ViewportState{
+  viewport:{}|undefined
+}
+
+const GraphComponent = (props: GraphComponentProps) => {
+  const { t } = useTranslation();
+  const [state, setState] = useState<GraphState>({targetItem:undefined});
+  const [viewPortState, setviewPortState] = useState<ViewportState>({ viewport: undefined });
+  const { title, data,isCumulative } = props;
+  const changeTargetItem = (targetItem: any) =>
+    setState({ ...state, targetItem });
+  const inputsContainerStyle = { justifyContent: "center" };
+  const submit = () => {
+    props.callBackFunction()
+  };
+  useEffect(() => {
+    setviewPortState({
+      viewport:props.viewport
+    });
+  }, [props.viewport]);
+
+  const viewportChange = (viewport:any) => {
+    setviewPortState({
+      viewport
+    });
   };
 
   const renderInput = (
-    id: "zoomArgument" | "zoomValue" | "cumulative",
+    id:"cumulative",
     label: string
   ): ReactElement => {
-    const { [id]: checked } = state;
     return (
       <FormControlLabel
         control={
           <Checkbox
             id={id}
-            checked={checked}
+            checked={props.isCumulative}
             onChange={submit}
             value="checkedB"
             color="primary"
@@ -215,117 +243,83 @@ const MeasureGraphOutputs = (props: MeasureGraphProps) => {
       />
     );
   };
+
+  const CurveStep = (props: any) => {
+    return (<LineSeries.Path
+      {...props}
+      path={line()
+        .x(({ arg }: any) => arg)
+        .y(({ val }: any) => val)
+        .curve(curveStep)}
+    />)
+  };
+  const Curve = (props: any) => {
+    return (<LineSeries.Path
+      {...props}
+      path={line()
+        .x(({ arg }: any) => arg)
+        .y(({ val }: any) => val)}
+    />)
+  };
+
   return (
-    <>
-      {ready && (
-        <div className="center margin-figure padding-bottom">
-          {state.cumulative && (
-            <Paper>
-              <Chart data={ProcessedData}>
-                <Title text={getTitle()} />
-                <ArgumentScale factory={scaleTime} />
-                <ArgumentAxis />
-                <ValueAxis />
-                <LineSeries
-                  name={t("Big Lamp")}
-                  valueField="bigLamp"
-                  argumentField="time"
-                />
-                <LineSeries
-                  name={t("Small Lamp")}
-                  valueField="smallLamp"
-                  argumentField="time"
-                />
-                <LineSeries
-                  name={t("Pump")}
-                  valueField="pompe"
-                  argumentField="time"
-                />
-                <LineSeries
-                  name={t("Fan Wind")}
-                  valueField="fanWind"
-                  argumentField="time"
-                />
-                <LineSeries
-                  name={t("Fan Change")}
-                  valueField="fanChange"
-                  argumentField="time"
-                />
-                <ZoomAndPan
-                  interactionWithArguments={getMode(state.zoomArgument)}
-                  interactionWithValues={getMode(state.zoomValue)}
-                  zoomRegionKey="ctrl"
-                  defaultViewport={getViewPort(ProcessedData, true)}
-                />
-                <EventTracker />
-                <Tooltip
-                  targetItem={state.targetItem}
-                  onTargetItemChange={changeTargetItem}
-                />
-                <Legend />
-              </Chart>
-              <FormGroup style={inputsContainerStyle} row>
-                {renderInput("zoomArgument", "Zoom on x-as")}
-                {renderInput("zoomValue", "Zoom on y-as")}
-                {renderInput("cumulative", "cumulative")}
-              </FormGroup>
-            </Paper>
-          )}
-          {!state.cumulative && (
-            <Paper>
-              <Chart data={ProcessedData}>
-                <Title text={getTitle()} />
-                <ArgumentScale factory={scaleTime} />
-                <ArgumentAxis />
-                <ValueAxis />
-                <LineSeries
-                  name={t("Big Lamp")}
-                  valueField="bigLamp"
-                  argumentField="time"
-                  seriesComponent={Line}
-                />
-                <LineSeries
-                  name={t("Small Lamp")}
-                  valueField="smallLamp"
-                  argumentField="time"
-                  seriesComponent={Line}
-                />
-                <LineSeries
-                  name={t("Pump")}
-                  valueField="pompe"
-                  argumentField="time"
-                  seriesComponent={Line}
-                />
-                <LineSeries
-                  name={t("Fan Wind")}
-                  valueField="fanWind"
-                  argumentField="time"
-                  seriesComponent={Line}
-                />
-                <ZoomAndPan
-                  interactionWithArguments={getMode(state.zoomArgument)}
-                  interactionWithValues={getMode(state.zoomValue)}
-                  zoomRegionKey="ctrl"
-                  defaultViewport={getViewPort(ProcessedData, false)}
-                />
-                <EventTracker />
-                <Tooltip
-                  targetItem={state.targetItem}
-                  onTargetItemChange={changeTargetItem}
-                />
-                <Legend />
-              </Chart>
-              <FormGroup style={inputsContainerStyle} row>
-                {renderInput("zoomArgument", "Zoom on x-as")}
-                {renderInput("zoomValue", "Zoom on y-as")}
-                {renderInput("cumulative", "cumulative")}
-              </FormGroup>
-            </Paper>
-          )}
-        </div>
-      )}
-    </>
+          <Paper>
+            <Chart data={data} key={data.length}>
+              <Title text={title} />
+              <ArgumentScale factory={scaleTime} />
+              <ArgumentAxis />
+        <ValueAxis />
+              <LineSeries
+                name={t("Big Lamp")}
+                key="bigLamp"
+                valueField="bigLamp"
+                argumentField="time"
+                seriesComponent={isCumulative ? Curve:CurveStep}
+              />
+              <LineSeries
+                name={t("Small Lamp")}
+                key="smallLamp"
+                valueField="smallLamp"
+                argumentField="time"
+                seriesComponent={isCumulative ? Curve:CurveStep}
+              />
+              <LineSeries
+                name={t("Pump")}
+                key="pompe"
+                valueField="pompe"
+                argumentField="time"
+                seriesComponent={isCumulative ? Curve:CurveStep}
+              />
+              <LineSeries
+                name={t("Fan Wind")}
+                key="fanWind"
+                valueField="fanWind"
+                argumentField="time"
+                seriesComponent={isCumulative ? Curve:CurveStep}
+              />
+              <LineSeries
+                name={t("Fan Change")}
+                key="fanChange"
+                valueField="fanChange"
+                argumentField="time"
+                seriesComponent={isCumulative ? Curve:CurveStep}
+        />
+              <ZoomAndPan
+                viewport={viewPortState.viewport}
+                onViewportChange={viewportChange}
+              />
+              <EventTracker />
+              <Tooltip
+                targetItem={state.targetItem}
+                onTargetItemChange={changeTargetItem}
+              />
+              <Legend />
+            </Chart>
+            <FormGroup style={inputsContainerStyle} row>
+              {renderInput("cumulative", "Cumulative")}
+            </FormGroup>
+          </Paper>
   );
-};
+}
 
 export default MeasureGraphOutputs;

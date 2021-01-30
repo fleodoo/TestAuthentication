@@ -1,17 +1,19 @@
-import { useTranslation } from "react-i18next";
-import React, { useState } from "react";
-import MeasureGraphTemperature from "./PlantBoxGraphTemperature";
-import MeasureGraphHumidity from "./PlantBoxGraphHumidity";
-import MeasureGraphOutputs from "./PlantBoxGraphOutputs";
-import { Data } from "..";
 import moment, { Moment } from "moment";
-import { FormControl } from "react-bootstrap";
+import React, { useState } from "react"; // import MeasureGraphHumidity from "./PlantBoxGraphHumidity";
+// import MeasureGraphTemperature from "./PlantBoxGraphTemperature";
 //@ts-ignore
 import DateTimeRangeContainer from "react-advanced-datetimerange-picker";
+import { FormControl } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
+import { Measure, Output } from "..";
+import MeasureGraphHumidity from "./PlantBoxGraphHumidity";
+import MeasureGraphOutputs from "./PlantBoxGraphOutputs";
+import MeasureGraphTemperature from "./PlantBoxGraphTemperature";
 
 interface PlantBoxGraphsProps {
   loading: boolean;
-  data: Data[];
+  measures: Measure[];
+  outputs: Output[];
 }
 
 interface PlantBoxGraphsState {
@@ -93,17 +95,18 @@ const PlantBoxGraphs = (props: PlantBoxGraphsProps) => {
       </div>
       <MeasureGraphTemperature
         loading={props.loading}
-        data={props.data}
+        measure={props.measures}
         start={state.start}
         end={state.end}
       />
       <MeasureGraphHumidity
         loading={props.loading}
-        data={props.data}
+        data={props.measures}
         start={state.start}
         end={state.end}
       />
-      <MeasureGraphOutputs loading={props.loading} data={props.data} />
+      <MeasureGraphOutputs loading={props.loading} outputs={props.outputs} start={state.start}
+        end={state.end}/>
     </>
   );
 };
