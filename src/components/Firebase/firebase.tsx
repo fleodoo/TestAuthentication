@@ -2,6 +2,7 @@ import AwesomeDebouncePromise from "awesome-debounce-promise";
 import app from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
+import "firebase/storage";
 import * as ROLES from "../../constants/roles";
 import { Output } from "../PlantBox";
 
@@ -20,9 +21,10 @@ const config = {
 class Firebase {
   auth: app.auth.Auth;
   db: app.database.Database;
+  storage: app.storage.Storage;
   constructor() {
     app.initializeApp(config);
-
+    this.storage = app.storage();
     this.auth = app.auth();
     this.db = app.database();
   }
@@ -113,6 +115,8 @@ class Firebase {
 
   user = (uid: string) => this.db.ref(`users/${uid}`);
   users = () => this.db.ref("users");
+
+  // *** Measures API ***
   measures = () => this.db.ref("measures");
   outputs = () => this.db.ref("outputs");
   changeOutput = (output: Output) => {
@@ -127,6 +131,11 @@ class Firebase {
     this.db.ref("outputs/" + time).set(formatedData);
   };
   changeOutputDebounced = AwesomeDebouncePromise(this.changeOutput, 2000);
+
+  // *** storage API ***
+  getLastPicture = () => {
+    return this.storage.ref().child('images/lastPicture.jpg').getDownloadURL();
+  } 
 }
 
 export default Firebase;

@@ -16,12 +16,18 @@ const PlantBoxCurrentState = (props: any) => {
     currentOutput: undefined,
     currentMeasure: undefined,
   });
+  const [image,setImage] = useState('')
 
   useEffect(() => {
     if (props.currentMeasure && props.currentOutput) {
       setCurrentState({ currentMeasure: props.currentMeasure, currentOutput: props.currentOutput })
     }
-  }, [props.currentMeasure, props.currentOutput]);
+    async function fetchMyImage() {
+      const lastPicture = await props.firebase.getLastPicture()
+      setImage(lastPicture);
+    }
+    fetchMyImage()
+  }, [props.currentMeasure, props.currentOutput, props.firebase]);
 
   const updateState = (key: "bigLamp" | "fanWind" | "smallLamp" | "fanChange" | "pump", value: boolean) => {
     if (!currentState.currentOutput) {
@@ -61,6 +67,9 @@ const PlantBoxCurrentState = (props: any) => {
               value={props.currentMeasure.waterVolume ? t("Ok") : t("Not Ok")}
             />
           </div>
+
+          <img className="pb-last-image" src={ image } alt="Last" />
+            
           <div className="pb-motors">
             <Motor
               id="bigLamp"

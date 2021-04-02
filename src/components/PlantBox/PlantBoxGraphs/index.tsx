@@ -1,6 +1,5 @@
 import moment, { Moment } from "moment";
-import React, { useState } from "react"; // import MeasureGraphHumidity from "./PlantBoxGraphHumidity";
-// import MeasureGraphTemperature from "./PlantBoxGraphTemperature";
+import React, { useState } from "react";
 //@ts-ignore
 import DateTimeRangeContainer from "react-advanced-datetimerange-picker";
 import { FormControl } from "react-bootstrap";
