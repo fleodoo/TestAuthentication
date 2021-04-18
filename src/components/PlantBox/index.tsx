@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
 import { useTranslation } from "react-i18next";
 import { compose } from "recompose";
-import * as ROLES from "../../constants/roles";
-import {
-  withAuthorization,
-  withEmailVerification
-} from "../Authentication/Session";
+import { withAuthorization, withEmailVerification } from "../Authentication/Session";
 import { withFirebase } from "../Firebase";
 import PlantBoxCurrentState from "./PlantBoxCurrentState";
 import PlantBoxGraphs from "./PlantBoxGraphs";
@@ -177,12 +173,12 @@ const PlantBox = (props: any) => {
         page === Page.Current && <PlantBoxCurrentState currentMeasure={currentMeasure} currentOutput={currentOutput}/>
       }
       {page === Page.Graphs && <PlantBoxGraphs loading={loading} measures={measures} outputs={outputs}/>}
-      {page === Page.Data && <MeasureTable loading={loading} measures={measures} outputs={outputs}/>}
+      {page === Page.Data && <MeasureTable loading={loading} measures={measures.reverse()} outputs={outputs.reverse()}/>}
     </div>
   );
 };
   
-const condition = (authUser: any) => authUser && !!authUser.roles[ROLES.ADMIN];
+const condition = (authUser: any) => authUser; //&& !!authUser.roles[ROLES.ADMIN];
 export default compose(
   withEmailVerification,
   withAuthorization(condition),

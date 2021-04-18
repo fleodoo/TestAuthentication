@@ -1,11 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
-
-import SignOutButton from "../Authentication/SignOut";
-import * as ROUTES from "../../constants/routes";
-import * as ROLES from "../../constants/roles";
-import { AuthUserContext } from "../Authentication/Session";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import * as ROLES from "../../constants/roles";
+import * as ROUTES from "../../constants/routes";
+import { AuthUserContext } from "../Authentication/Session";
+import SignOutButton from "../Authentication/SignOut";
+
 
 interface NavigationProps {
   authUser: any;
@@ -39,11 +39,15 @@ const NavigationAuth = (props: NavigationProps) => {
       <Link className="link" to={ROUTES.LANDING}>
         {t("Home")}
       </Link>
-      {!!props.authUser.roles[ROLES.ADMIN] && (
+      {!!props.authUser.roles[ROLES.USER] && (
         <>
           <Link className="link" to={ROUTES.PLANT}>
             {t("PlantBox")}
           </Link>
+        </>
+      )}
+      {!!props.authUser.roles[ROLES.ADMIN] && (
+        <>
           <Link className="link" to={ROUTES.ADMIN}>
             {t("Admin")}
           </Link>

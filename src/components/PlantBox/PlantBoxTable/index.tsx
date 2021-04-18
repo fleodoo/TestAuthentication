@@ -14,7 +14,6 @@ interface DataString {
   temperature: string;
   airHumidity: string;
   soilHumidity: string;
-  waterVolume: string;
 }
 interface OutputString {
   time: string;
@@ -32,7 +31,6 @@ const MeasureTable = (props: MeasurTableProps) => {
       temperature: data.temperature.toString(),
       airHumidity: data.airHumidity.toString(),
       soilHumidity: data.soilHumidity.toString(),
-      waterVolume: data.waterVolume ? t("Ok") : t("Not Ok"),
     }));
   };
   const outputsToString = (datas: Output[]): OutputString[] => {
@@ -66,11 +64,6 @@ const MeasureTable = (props: MeasurTableProps) => {
     {
       key: "soilHumidity",
       header: t("Soil Humidity"),
-      width: 150,
-    },
-    {
-      key: "waterVolume",
-      header: t("Has Water"),
       width: 150,
     },
   ];

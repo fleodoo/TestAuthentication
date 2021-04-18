@@ -1,8 +1,9 @@
 import { Switch } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { compose } from "recompose";
 import { Output } from "..";
+import { AuthUserContext } from "../../Authentication/Session";
 import { withFirebase } from "../../Firebase";
 
 interface CurrentState {
@@ -16,18 +17,26 @@ const PlantBoxCurrentState = (props: any) => {
     currentOutput: undefined,
     currentMeasure: undefined,
   });
+  const [roles, setRoles]= useState<string[]>([])
   const [image,setImage] = useState('')
-
+  const authUser = useContext(AuthUserContext)
   useEffect(() => {
+    console.log(authUser)
+    if (authUser) {
+      const roles: string[] = Object.values(authUser.roles)
+      setRoles(roles)
+    }
     if (props.currentMeasure && props.currentOutput) {
-      setCurrentState({ currentMeasure: props.currentMeasure, currentOutput: props.currentOutput })
+      setCurrentState({currentMeasure: props.currentMeasure, currentOutput: props.currentOutput })
     }
     async function fetchMyImage() {
       const lastPicture = await props.firebase.getLastPicture()
       setImage(lastPicture);
     }
     fetchMyImage()
-  }, [props.currentMeasure, props.currentOutput, props.firebase]);
+  }, [props.currentMeasure, props.currentOutput, props.firebase, authUser]);
+
+  const isAdmin = () => roles.includes("ADMIN");
 
   const updateState = (key: "bigLamp" | "fanWind" | "smallLamp" | "fanChange" | "pump", value: boolean) => {
     if (!currentState.currentOutput) {
@@ -62,10 +71,6 @@ const PlantBoxCurrentState = (props: any) => {
               name={t("Soil Humidity")}
               value={(props.currentMeasure.soilHumidity).toString() + "%"}
             />
-            <Measure
-              name={t("Water Volume")}
-              value={props.currentMeasure.waterVolume ? t("Ok") : t("Not Ok")}
-            />
           </div>
 
           <img className="pb-last-image" src={ image } alt="Last" />
@@ -73,30 +78,35 @@ const PlantBoxCurrentState = (props: any) => {
           <div className="pb-motors">
             <Motor
               id="bigLamp"
+              isAdmin={isAdmin()}
               name={t("Big Lamp")}
               value={props.currentOutput.bigLamp}
               newValue={updateState}
             />
             <Motor
               id="fanWind"
+              isAdmin={isAdmin()}
               name={t("Fan Wind")}
               value={props.currentOutput.fanWind}
               newValue={updateState}
             />
             <Motor
               id="smallLamp"
+              isAdmin={isAdmin()}
               name={t("Small Lamp")}
               value={props.currentOutput.smallLamp}
               newValue={updateState}
             />
             <Motor
               id="fanChange"
+              isAdmin={isAdmin()}
               name={t("Fan Change")}
               value={props.currentOutput.fanChange}
               newValue={updateState}
             />
             <Motor
               id="pompe"
+              isAdmin={isAdmin()}
               name={t("Pump")}
               value={props.currentOutput.pompe}
               newValue={updateState}
@@ -124,6 +134,7 @@ const Measure = (props: MeasureProps) => {
 
 interface MotorProps {
   name: string;
+  isAdmin: boolean;
   value: boolean;
   newValue: Function;
   id: string;
@@ -153,6 +164,7 @@ const Motor = (props: MotorProps) => {
         onChange={changeValue}
         color="primary"
         name="checkedB"
+        disabled={!props.isAdmin}
         inputProps={{ "aria-label": "primary checkbox" }}
       />
     </div>
