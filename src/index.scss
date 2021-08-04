@@ -428,6 +428,12 @@ Note: Beware of modifying this element as it can break the animations - you shou
     }
   }
 }
+.pb-motor-container {
+  display: flex;
+  .pb-motor-container-item {
+    flex-grow: 1;
+  }
+}
 
 .pb-graph-timestamp {
   display: flex;

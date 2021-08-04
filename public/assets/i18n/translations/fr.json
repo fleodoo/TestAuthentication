@@ -53,5 +53,6 @@
   "Data": "Data",
   "Graphs": "Graphs",
   "On/Off": "On/Off",
-  "Timestamp": "Interval"
+  "Timestamp": "Interval",
+  "Auto": "Auto"
 }

@@ -21,7 +21,8 @@ interface PlantBoxState {
   measures: Measure[];
   outputs: Output[];
   currentMeasure: Measure | undefined;
-  currentOutput: Output | undefined;
+  currentOutput: OutputNoTime | undefined;
+  currentAuto: Auto |undefined
 }
 
 export interface Measure {
@@ -40,6 +41,22 @@ export interface Output {
   fanChange: boolean;
 }
 
+export interface OutputNoTime {
+  bigLamp: boolean;
+  smallLamp: boolean;
+  pompe: boolean;
+  fanWind: boolean;
+  fanChange: boolean;
+}
+
+export interface Auto {
+  bigLampAuto: boolean;
+  smallLampAuto: boolean;
+  pompeAuto: boolean;
+  fanWindAuto: boolean;
+  fanChangeAuto: boolean;
+}
+
 const PlantBox = (props: any) => {
   const initState = (): PlantBoxState => {
     return {
@@ -50,6 +67,7 @@ const PlantBox = (props: any) => {
       outputs: [],
       currentMeasure: undefined,
       currentOutput: undefined,
+      currentAuto:undefined,
     };
   };
 
@@ -83,7 +101,21 @@ const PlantBox = (props: any) => {
     });
     props.firebase.outputs().on("value", (snapshot: any) => {
       const measuresObject = snapshot.val();
+      let lastOutputStatus = {
+        time:0,
+        lamp1 : false,
+        lamp2: false,
+        pompe: false,
+        vantilo1: false,
+        vantilo2: false,
+        lamp1Auto : false,
+        lamp2Auto: false,
+        pompeAuto: false,
+        vantilo1Auto: false,
+        vantilo2Auto: false,
+      }
       const data: Output[] = Object.keys(measuresObject).map((key) => {
+        lastOutputStatus = measuresObject[key];
         const time = new Date(parseInt(key) * 1000);
         const bigLamp = Boolean(measuresObject[key].lamp1);
         const smallLamp = Boolean(measuresObject[key].lamp2);
@@ -99,12 +131,26 @@ const PlantBox = (props: any) => {
           fanChange,
         };
       });
-      const [lastOutput] = data.slice(-1);;
+      const currentOutput = {
+        bigLamp:lastOutputStatus.lamp1,
+        smallLamp:lastOutputStatus.lamp2,
+        pompe:lastOutputStatus.pompe,
+        fanWind:lastOutputStatus.vantilo1,
+        fanChange:lastOutputStatus.vantilo2
+      }
+      const currentAuto = {
+        bigLampAuto:lastOutputStatus.lamp1Auto,
+        smallLampAuto:lastOutputStatus.lamp2Auto,
+        pompeAuto:lastOutputStatus.pompeAuto,
+        fanWindAuto:lastOutputStatus.vantilo1Auto,
+        fanChangeAuto:lastOutputStatus.vantilo2Auto
+      }
       setState((prevState: PlantBoxState) => ({
         ...prevState,
         outputs:data,
-        currentOutput: lastOutput,
-        loading: false,
+        currentOutput,
+        currentAuto,
+        loading:false,
       }));
     });
     return () => {
@@ -133,7 +179,7 @@ const PlantBox = (props: any) => {
       menuOpen: false,
     }));
   };
-  const { currentMeasure, currentOutput, page, loading, measures, outputs, menuOpen } = state;
+  const { currentMeasure, currentOutput, currentAuto ,page, loading, measures, outputs, menuOpen } = state;
   return (
     <div className="plantbox">
       {!loading && (
@@ -170,7 +216,7 @@ const PlantBox = (props: any) => {
       )}
       {
         //@ts-ignore
-        page === Page.Current && <PlantBoxCurrentState currentMeasure={currentMeasure} currentOutput={currentOutput}/>
+        page === Page.Current && <PlantBoxCurrentState automatic={currentAuto} currentMeasure={currentMeasure} currentOutput={currentOutput}/>
       }
       {page === Page.Graphs && <PlantBoxGraphs loading={loading} measures={measures} outputs={outputs}/>}
       {page === Page.Data && <MeasureTable loading={loading} measures={measures.reverse()} outputs={outputs.reverse()}/>}

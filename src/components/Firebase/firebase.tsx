@@ -4,8 +4,12 @@ import "firebase/auth";
 import "firebase/database";
 import "firebase/storage";
 import * as ROLES from "../../constants/roles";
-import { Output } from "../PlantBox";
+import { Output,Auto } from "../PlantBox";
 
+interface ChangeOutput {
+  currentOutput: Output,
+   automatic: Auto
+}
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -119,14 +123,19 @@ class Firebase {
   // *** Measures API ***
   measures = () => this.db.ref("measures");
   outputs = () => this.db.ref("outputs");
-  changeOutput = (output: Output) => {
-    const time = (output.time.getTime() / 1000).toFixed(0);
+  changeOutput = (  change: ChangeOutput ) => {
+    const time = (change.currentOutput.time.getTime() / 1000).toFixed(0);
     const formatedData = {
-      vantilo1: output.fanWind,
-      vantilo2: output.fanChange,
-      lamp1: output.bigLamp,
-      lamp2: output.smallLamp,
-      pompe: output.pompe,
+      vantilo1: change.currentOutput.fanWind,
+      vantilo2: change.currentOutput.fanChange,
+      lamp1: change.currentOutput.bigLamp,
+      lamp2: change.currentOutput.smallLamp,
+      pompe: change.currentOutput.pompe,
+      vantilo1Auto: change.automatic.fanWindAuto,
+      vantilo2Auto: change.automatic.fanChangeAuto,
+      lamp1Auto: change.automatic.bigLampAuto,
+      lamp2Auto: change.automatic.smallLampAuto,
+      pompeAuto: change.automatic.pompeAuto,
     };
     this.db.ref("outputs/" + time).set(formatedData);
   };
