@@ -8,6 +8,7 @@ import PlantBoxCurrentState from "./PlantBoxCurrentState";
 import PlantBoxGraphs from "./PlantBoxGraphs";
 import MeasureTable from "./PlantBoxTable";
 
+
 enum Page {
   Graphs,
   Data,

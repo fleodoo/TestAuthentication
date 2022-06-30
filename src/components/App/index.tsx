@@ -13,6 +13,7 @@ import i18n from "../../i18n";
 import * as ROUTES from "../../constants/routes";
 import { withAuthentication } from "../Authentication/Session";
 import PlantBox from "../PlantBox";
+import LedPanel from "../LedPanel";
 
 const App = () => {
   const changeLanguage = (lng: any) => {
@@ -30,6 +31,7 @@ const App = () => {
       <Route path={ROUTES.ACCOUNT} component={AccountPage} />
       <Route path={ROUTES.ADMIN} component={AdminPage} />
       <Route path={ROUTES.PLANT} component={PlantBox} />
+      <Route path={ROUTES.LEDPANEL} component={LedPanel} />
       <div className="language">
         <button onClick={() => changeLanguage("fr")}>Fr</button>-
         <button onClick={() => changeLanguage("en")}>En</button>

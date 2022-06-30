@@ -46,6 +46,13 @@ const NavigationAuth = (props: NavigationProps) => {
           </Link>
         </>
       )}
+      {!!props.authUser.roles[ROLES.USER] && (
+        <>
+          <Link className="link" to={ROUTES.LEDPANEL}>
+            {t("Led Panel")}
+          </Link>
+        </>
+      )}
       {!!props.authUser.roles[ROLES.ADMIN] && (
         <>
           <Link className="link" to={ROUTES.ADMIN}>
