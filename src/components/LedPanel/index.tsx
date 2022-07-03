@@ -11,7 +11,7 @@ const GRID_ROW_LENGTH= 12
 const GRID_COL_LENGTH = 12
 
 const LedPanel = (props: any) => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   const [color, setColor] = useState("#aabbcc");
   const [colorArray, setColorArray] = useState(Array(12).fill(Array(12).fill("#FF0000")));
 
