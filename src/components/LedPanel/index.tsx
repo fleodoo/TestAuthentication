@@ -1,5 +1,5 @@
 import React, { MouseEventHandler, useState } from "react";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 import { compose } from "recompose";
 import { withAuthorization, withEmailVerification } from "../Authentication/Session";
 import { withFirebase } from "../Firebase";
