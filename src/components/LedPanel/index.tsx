@@ -58,7 +58,7 @@ interface CellProps {
 }
 
 const Cell = (props: CellProps) => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   return (
     <div onClick={props.onClick}
     style={{
