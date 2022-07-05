@@ -88,7 +88,6 @@ const Cell = (props: CellProps) => {
     style={{
       backgroundColor: props.color,
     }}className="ledpanel_cell">
-      {"("+props.col+","+props.row+")"}
     </div>
   );
 };
