@@ -48,7 +48,7 @@ const PlantBoxCurrentState = (props: any) => {
       [key]: value,
       time: new Date(Date.now()),
     };
-    props.firebase.changeOutputDebounced(
+    props.firebase.changeOutput(
       {
         currentOutput: newCurrentOutput,
         automatic: currentState.automatic
@@ -68,7 +68,7 @@ const PlantBoxCurrentState = (props: any) => {
       ...currentState.currentOutput,
       time: new Date(Date.now()),
     };
-    props.firebase.changeOutputDebounced(
+    props.firebase.changeOutput(
       {
         currentOutput: newCurrentOutput,
         automatic: newAutomatic
@@ -226,7 +226,7 @@ const Motor = (props: MotorProps) => {
             onChange={changeAutomatic}
             color="primary"
             name="checkedB"
-            // disabled={!props.isAdmin}
+            disabled={!props.isAdmin}
             inputProps={{ "aria-label": "primary checkbox" }}
           />
         </div>

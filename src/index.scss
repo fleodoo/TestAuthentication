@@ -459,7 +459,14 @@ Note: Beware of modifying this element as it can break the animations - you shou
 
 .ledpanel {
   .ledpanel-row {
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 0.8em;
+    padding-bottom: 0.8em;
+  }
+
+  .ledpanel_cell{
+    min-height: 3em;
+    max-height: 3em;
+    min-width: 3em;
+    max-width: 3em;    
   }
 }

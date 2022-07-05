@@ -1,19 +1,37 @@
-import React, { MouseEventHandler, useState } from "react";
+import React, { MouseEventHandler, useContext, useEffect, useState } from "react";
 // import { useTranslation } from "react-i18next";
 import { compose } from "recompose";
-import { withAuthorization, withEmailVerification } from "../Authentication/Session";
+import { AuthUserContext, withAuthorization, withEmailVerification } from "../Authentication/Session";
 import { withFirebase } from "../Firebase";
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { HexColorPicker } from "react-colorful";
+import { useTranslation } from "react-i18next";
 
 
 const GRID_ROW_LENGTH= 12
 const GRID_COL_LENGTH = 12
 
 const LedPanel = (props: any) => {
-  // const { t } = useTranslation();
-  const [color, setColor] = useState("#aabbcc");
+  const { t } = useTranslation();
+  const [color, setColor] = useState("#11f011");
   const [colorArray, setColorArray] = useState(Array(12).fill(Array(12).fill("#FF0000")));
+  const [roles, setRoles]= useState<string[]>([])
+  const authUser = useContext(AuthUserContext)
+
+  useEffect(() => {
+    if (authUser) {
+      const roles: string[] = Object.values(authUser.roles)
+      setRoles(roles)
+    }
+  }, [authUser]);
+
+  const isAdmin = () => roles.includes("ADMIN");
+
+  function transpose(matrix: any) {
+    return matrix.reduce((prev: { [x: string]: any; }, next: any[]) => next.map((item, i) =>
+      (prev[i] || []).concat(next[i])
+    ), []);
+  }
 
   const changeColor = (col :number,row:number)=>{
     var newArray = [];
@@ -22,17 +40,20 @@ const LedPanel = (props: any) => {
     newArray[col][row] = color;
     setColorArray(newArray)
   }
-  console.log(colorArray)
+
+  const submit = ()=>{
+    props.firebase.setLeds(transpose(colorArray).flat());
+  }
   return (
     <div className="ledpanel">
       <Grid fluid>
         <Row className="ledpanel-row">
-        <Col xs={10} sm={10} md={10} lg={10} key={"grid"}>
+        <Col xs={7} sm={7} md={7} lg={7} key={"grid"}>
           <Grid fluid>
             {[...Array(GRID_ROW_LENGTH)].map((i, row) =>
               <Row between="xs" key={row} className="ledpanel-row">
                 {[...Array(GRID_COL_LENGTH)].map((j, col) =>
-                    <Col xs={1} sm={1} md={1} lg={1} key={col}>
+                    <Col key={col}>
                       <Cell col={col} row={row} color={colorArray[col][row]} onClick={()=>changeColor(col,row)}/>
                     </Col>
                 )}
@@ -40,8 +61,11 @@ const LedPanel = (props: any) => {
             )}
           </Grid>
         </Col>
-        <Col xs={2} sm={2} md={2} lg={2} key={"color-picker"}>
+        <Col xs={5} sm={5} md={5} lg={5} key={"color-picker"}>
           <HexColorPicker color={color} onChange={setColor} />
+          <button disabled={!isAdmin} onClick={submit}>
+          {t("Submit")}
+        </button>
         </Col>
         </Row>
       </Grid>
@@ -74,3 +98,5 @@ export default compose(
   withAuthorization(condition),
   withFirebase
 )(LedPanel);
+
+

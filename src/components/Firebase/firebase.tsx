@@ -1,4 +1,3 @@
-import AwesomeDebouncePromise from "awesome-debounce-promise";
 import app from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
@@ -8,7 +7,7 @@ import { Output,Auto } from "../PlantBox";
 
 interface ChangeOutput {
   currentOutput: Output,
-   automatic: Auto
+  automatic: Auto
 }
 
 const config = {
@@ -137,14 +136,19 @@ class Firebase {
       lamp2Auto: change.automatic.smallLampAuto,
       pompeAuto: change.automatic.pompeAuto,
     };
+    console.log(formatedData)
     this.db.ref("outputs/" + time).set(formatedData);
   };
-  changeOutputDebounced = AwesomeDebouncePromise(this.changeOutput, 2000);
+  // changeOutputDebounced = AwesomeDebouncePromise(this.changeOutput, 2000);
 
   // *** storage API ***
   getLastPicture = () => {
     return this.storage.ref().child('images/lastPicture.jpg').getDownloadURL();
-  } 
+  }
+  
+  setLeds = (leds: string[]) => {
+    this.db.ref("leds").set(leds);
+  }
 }
 
 export default Firebase;
