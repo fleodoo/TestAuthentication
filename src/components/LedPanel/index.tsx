@@ -11,12 +11,31 @@ import { useTranslation } from "react-i18next";
 const GRID_ROW_LENGTH= 12
 const GRID_COL_LENGTH = 12
 
+
 const LedPanel = (props: any) => {
   const { t } = useTranslation();
   const [color, setColor] = useState("#11f011");
   const [colorArray, setColorArray] = useState(Array(12).fill(Array(12).fill("#FF0000")));
   const [roles, setRoles]= useState<string[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
   const authUser = useContext(AuthUserContext)
+
+  useEffect(() => {
+    props.firebase.getLeds().on("value", (snapshot: any) => {
+      setLoading(true);
+      const ledsArray = snapshot.val();
+      var size = 12; 
+      var arrayOfArrays:String[][]= [];
+      for (var i=0; i<ledsArray.length; i+=size) {
+          arrayOfArrays.push(ledsArray.slice(i,i+size));
+      }
+      setColorArray(transpose(arrayOfArrays))
+      setLoading(false);
+    });
+    return () => {
+      props.firebase.getLeds().off();
+    };
+  }, [props.firebase]);
 
   useEffect(() => {
     if (authUser) {
@@ -44,8 +63,11 @@ const LedPanel = (props: any) => {
   const submit = ()=>{
     props.firebase.setLeds(transpose(colorArray).flat());
   }
+
+  console.log(loading)
   return (
     <div className="ledpanel">
+      {!loading && (
       <Grid fluid>
         <Row className="ledpanel-row">
         <Col xs={7} sm={7} md={7} lg={7} key={"grid"}>
@@ -69,6 +91,12 @@ const LedPanel = (props: any) => {
         </Col>
         </Row>
       </Grid>
+      )}
+      {loading && (
+        <div>
+          Loading...
+        </div>
+      )}
     </div>
   );
 };

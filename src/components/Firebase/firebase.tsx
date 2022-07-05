@@ -149,6 +149,7 @@ class Firebase {
   setLeds = (leds: string[]) => {
     this.db.ref("leds").set(leds);
   }
+  getLeds= () => this.db.ref("leds")
 }
 
 export default Firebase;
