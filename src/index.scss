@@ -458,6 +458,19 @@ Note: Beware of modifying this element as it can break the animations - you shou
 
 
 .ledpanel {
+  .float-container {    
+    .float-child1 {
+      width: 1000px;
+      float: left;
+      padding: 20px;
+    }  
+    .float-child2 {
+      width: 400px;
+      float: left;
+      padding: 20px;
+    }  
+  }
+
   .ledpanel-row {
     padding-top: 0.8em;
     padding-bottom: 0.8em;

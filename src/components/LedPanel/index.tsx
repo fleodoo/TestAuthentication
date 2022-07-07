@@ -68,9 +68,8 @@ const LedPanel = (props: any) => {
   return (
     <div className="ledpanel">
       {!loading && (
-      <Grid fluid>
-        <Row className="ledpanel-row">
-        <Col xs={7} sm={7} md={7} lg={7} key={"grid"}>
+        <div className="float-container">
+          <div className="float-child1">
           <Grid fluid>
             {[...Array(GRID_ROW_LENGTH)].map((i, row) =>
               <Row between="xs" key={row} className="ledpanel-row">
@@ -82,15 +81,14 @@ const LedPanel = (props: any) => {
               </Row>
             )}
           </Grid>
-        </Col>
-        <Col xs={5} sm={5} md={5} lg={5} key={"color-picker"}>
-          <HexColorPicker color={color} onChange={setColor} />
-          <button disabled={!isAdmin} onClick={submit}>
-          {t("Submit")}
-        </button>
-        </Col>
-        </Row>
-      </Grid>
+          </div>
+          <div className="float-child2">
+            <HexColorPicker color={color} onChange={setColor} />
+            <button disabled={!isAdmin} onClick={submit}>
+              {t("Submit")}
+            </button>
+          </div>
+        </div>
       )}
       {loading && (
         <div>
