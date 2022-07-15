@@ -19,6 +19,7 @@ const LedPanel = (props: any) => {
   const [roles, setRoles]= useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const authUser = useContext(AuthUserContext)
+  const [mouseDown, setMouseDown] = useState<boolean>(false)
 
   useEffect(() => {
     props.firebase.getLeds().on("value", (snapshot: any) => {
@@ -64,9 +65,14 @@ const LedPanel = (props: any) => {
     props.firebase.setLeds(transpose(colorArray).flat());
   }
 
-  console.log(loading)
+  const hoverCell = (col:number, row:number)=>{
+    if(mouseDown){
+      changeColor(col,row)
+    }
+  }
+
   return (
-    <div className="ledpanel">
+    <div className="ledpanel" onMouseDown={ ()=>{setMouseDown(true)} } onMouseUp={ ()=>{setMouseDown(false)}} onMouseLeave={ ()=>{setMouseDown(false)}}>
       {!loading && (
         <div className="float-container">
           <div className="float-child1">
@@ -75,7 +81,7 @@ const LedPanel = (props: any) => {
               <Row between="xs" key={row} className="ledpanel-row">
                 {[...Array(GRID_COL_LENGTH)].map((j, col) =>
                     <Col key={col}>
-                      <Cell col={col} row={row} color={colorArray[col][row]} onClick={()=>changeColor(col,row)}/>
+                      <Cell col={col} row={row} color={colorArray[col][row]} onClick={()=>changeColor(col,row)} onHover={()=>hoverCell(col,row)}/>
                     </Col>
                 )}
               </Row>
@@ -105,12 +111,14 @@ interface CellProps {
   row: number;
   color: string;
   onClick: MouseEventHandler;
+  onHover:any
 }
+
 
 const Cell = (props: CellProps) => {
   // const { t } = useTranslation();
   return (
-    <div onClick={props.onClick}
+    <div onMouseDown={props.onClick} onMouseEnter={props.onHover}
     style={{
       backgroundColor: props.color,
     }}className="ledpanel_cell">
