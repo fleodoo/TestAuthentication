@@ -460,7 +460,7 @@ Note: Beware of modifying this element as it can break the animations - you shou
 .ledpanel {
   .float-container {    
     .float-child1 {
-      width: 1000px;
+      width: 700px;
       float: left;
       padding: 20px;
     }  
@@ -472,8 +472,8 @@ Note: Beware of modifying this element as it can break the animations - you shou
   }
 
   .ledpanel-row {
-    padding-top: 0.8em;
-    padding-bottom: 0.8em;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
   }
 
   .ledpanel_cell{
