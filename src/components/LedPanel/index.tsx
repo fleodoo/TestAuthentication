@@ -29,7 +29,7 @@ const GRID_COL_LENGTH = 12
 const LedPanel = (props: any) => {
   const { t } = useTranslation();
   const [color, setColor] = useState("#11f011");
-  const [colorArray, setColorArray] = useState(Array(12).fill(Array(12).fill("#FF0000")));
+  const [colorArray, setColorArray] = useState(Array.from(new Array(GRID_COL_LENGTH), () => new Array(GRID_ROW_LENGTH).fill("#FF0000")));
   const [roles, setRoles]= useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const authUser = useContext(AuthUserContext);
@@ -40,7 +40,7 @@ const LedPanel = (props: any) => {
     props.firebase.getLeds().on("value", (snapshot: any) => {
       setLoading(true);
       const ledsArray = snapshot.val();
-      var size = 12; 
+      var size = GRID_ROW_LENGTH; 
       var arrayOfArrays:String[][]= [];
       for (var i=0; i<ledsArray.length; i+=size) {
           arrayOfArrays.push(ledsArray.slice(i,i+size));
@@ -89,8 +89,19 @@ const LedPanel = (props: any) => {
 
   const clickCopyColor = () =>{
     setCopyColor(!copyColor)
-    console.log("copycolor")
   }
+
+  const randomize = ()=>{
+    const newMatrix:String[][] = Array.from(new Array(GRID_COL_LENGTH), () => new Array(GRID_ROW_LENGTH).fill("#000000"));
+    for (var col = 0; col < GRID_COL_LENGTH; col++){
+      for (var row = 0; row < GRID_ROW_LENGTH; row++){
+        const color: string = "#"+Math.floor(Math.random()*16777215).toString(16);
+        newMatrix[row][col]= color;
+      }
+    }
+    setColorArray(newMatrix)
+  }
+
   const hoverCell = (col:number, row:number)=>{
     if(mouseDown){
       changeColor(col,row, false)
@@ -119,6 +130,11 @@ const LedPanel = (props: any) => {
             <div>
               <button className="copycolor" style={{borderStyle:copyColor ? "inset":"none"  }} disabled={!isAdmin} onClick={clickCopyColor}>
                 <FontAwesomeIcon icon={eyeDropperDefinition} />
+              </button>
+            </div>
+            <div>
+              <button className="random" disabled={!isAdmin} onClick={randomize}>
+                {t("Randomize")}
               </button>
             </div>
             <div>
