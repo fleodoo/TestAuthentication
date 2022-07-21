@@ -468,6 +468,13 @@ Note: Beware of modifying this element as it can break the animations - you shou
       width: 400px;
       float: left;
       padding: 20px;
+      .copycolor{
+        margin-bottom: 5px;
+      }
+      .submit{
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
     }  
   }
 
@@ -482,4 +489,5 @@ Note: Beware of modifying this element as it can break the animations - you shou
     min-width: 3em;
     max-width: 3em;    
   }
+
 }

@@ -6,7 +6,21 @@ import { withFirebase } from "../Firebase";
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { HexColorPicker } from "react-colorful";
 import { useTranslation } from "react-i18next";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+
+import {
+  IconLookup,
+  IconDefinition,
+  findIconDefinition
+} from '@fortawesome/fontawesome-svg-core'
+
+library.add(fas)
+
+const eye_dropper: IconLookup = { prefix: 'fas', iconName: 'eye-dropper' }
+const eyeDropperDefinition: IconDefinition = findIconDefinition(eye_dropper)
 
 const GRID_ROW_LENGTH= 12
 const GRID_COL_LENGTH = 12
@@ -16,10 +30,11 @@ const LedPanel = (props: any) => {
   const { t } = useTranslation();
   const [color, setColor] = useState("#11f011");
   const [colorArray, setColorArray] = useState(Array(12).fill(Array(12).fill("#FF0000")));
-  const [roles, setRoles]= useState<string[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const authUser = useContext(AuthUserContext)
-  const [mouseDown, setMouseDown] = useState<boolean>(false)
+  const [roles, setRoles]= useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const authUser = useContext(AuthUserContext);
+  const [mouseDown, setMouseDown] = useState<boolean>(false);
+  const [copyColor, setCopyColor] = useState<boolean>(false);
 
   useEffect(() => {
     props.firebase.getLeds().on("value", (snapshot: any) => {
@@ -53,21 +68,32 @@ const LedPanel = (props: any) => {
     ), []);
   }
 
-  const changeColor = (col :number,row:number)=>{
+  const changeColor = (col :number,row:number, isClick: boolean)=>{
+    if(isClick && copyColor){
+      const color = colorArray[col][row]
+      setColor(color);
+      setCopyColor(false);
+    } else {
+
     var newArray = [];
     for (var i = 0; i < colorArray.length; i++)
         newArray[i] = colorArray[i].slice();
     newArray[col][row] = color;
     setColorArray(newArray)
+    }
   }
 
   const submit = ()=>{
     props.firebase.setLeds(transpose(colorArray).flat());
   }
 
+  const clickCopyColor = () =>{
+    setCopyColor(!copyColor)
+    console.log("copycolor")
+  }
   const hoverCell = (col:number, row:number)=>{
     if(mouseDown){
-      changeColor(col,row)
+      changeColor(col,row, false)
     }
   }
 
@@ -81,7 +107,7 @@ const LedPanel = (props: any) => {
               <Row between="xs" key={row} className="ledpanel-row">
                 {[...Array(GRID_COL_LENGTH)].map((j, col) =>
                     <Col key={col}>
-                      <Cell col={col} row={row} color={colorArray[col][row]} onClick={()=>changeColor(col,row)} onHover={()=>hoverCell(col,row)}/>
+                      <Cell col={col} row={row} color={colorArray[col][row]} onClick={()=>changeColor(col,row,true)} onHover={()=>hoverCell(col,row)}/>
                     </Col>
                 )}
               </Row>
@@ -90,9 +116,16 @@ const LedPanel = (props: any) => {
           </div>
           <div className="float-child2">
             <HexColorPicker color={color} onChange={setColor} />
-            <button disabled={!isAdmin} onClick={submit}>
-              {t("Submit")}
-            </button>
+            <div>
+              <button className="copycolor" style={{borderStyle:copyColor ? "inset":"none"  }} disabled={!isAdmin} onClick={clickCopyColor}>
+                <FontAwesomeIcon icon={eyeDropperDefinition} />
+              </button>
+            </div>
+            <div>
+              <button className="submit" disabled={!isAdmin} onClick={submit}>
+                {t("Submit")}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -121,7 +154,8 @@ const Cell = (props: CellProps) => {
     <div onMouseDown={props.onClick} onMouseEnter={props.onHover}
     style={{
       backgroundColor: props.color,
-    }}className="ledpanel_cell">
+    }}
+    className="ledpanel_cell">
     </div>
   );
 };
