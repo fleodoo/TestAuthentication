@@ -465,17 +465,29 @@ Note: Beware of modifying this element as it can break the animations - you shou
       padding: 20px;
     }  
     .float-child2 {
-      width: 400px;
+      width: 200px;
       float: left;
       padding: 20px;
+      .random{
+        margin-right: 5px;
+        margin-bottom: 5px;
+        margin-top: 5px;
+      }
       .copycolor{
+        margin-left: 5px;
+        margin-top: 5px;
         margin-bottom: 5px;
       }
       .submit{
         margin-top: 5px;
         margin-bottom: 5px;
       }
-    }  
+    }
+    .float-child3 {
+      width: 200px;
+      float: left;
+      padding: 20px;
+    }    
   }
 
   .ledpanel-row {

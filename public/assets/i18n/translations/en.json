@@ -57,5 +57,7 @@
   "Auto": "Auto",
   "Led Panel": "Led Panel",
   "Submit": "Submit",
-  "Randomize": "Randomize"
+  "Randomize": "Randomize",
+  "Number of Horizontal moves per second":"Number of Horizontal moves per second: ",
+  "Number of Vertical moves per second":"Number of Vertical moves per second: "
 }

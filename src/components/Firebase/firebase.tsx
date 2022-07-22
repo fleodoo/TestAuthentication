@@ -4,7 +4,7 @@ import "firebase/database";
 import "firebase/storage";
 import * as ROLES from "../../constants/roles";
 import { Output,Auto } from "../PlantBox";
-
+import {MetaData} from "../LedPanel";
 interface ChangeOutput {
   currentOutput: Output,
   automatic: Auto
@@ -147,9 +147,17 @@ class Firebase {
   }
   
   setLeds = (leds: string[]) => {
-    this.db.ref("leds").set(leds);
+    this.db.ref("ledpanel/leds").set(leds);
   }
-  getLeds= () => this.db.ref("leds")
+  getLeds= () => this.db.ref("ledpanel/leds")
+
+  setMetaData = (metadata: MetaData) => {
+    this.db.ref("ledpanel/metadata").set(metadata);
+  }
+
+  getMetaData = () => this.db.ref("ledpanel/metadata")
+
+
 }
 
 export default Firebase;
