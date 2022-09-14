@@ -93,8 +93,8 @@ const LedController = (props: LedGridProps) => {
           valueLabelDisplay="auto"
           value ={props.horizontalSlideValue}
           step={0.1}
-          min={-5}
-          max={5}
+          min={-20}
+          max={20}
           track={false}
           onChange={onChangeSliderH}
         />
@@ -107,8 +107,8 @@ const LedController = (props: LedGridProps) => {
           valueLabelDisplay="auto"
           value ={props.verticalSlideValue}
           step={0.1}
-          min={-5}
-          max={5}
+          min={-20}
+          max={20}
           track={false}
           onChange={onChangeSliderV}
         />
