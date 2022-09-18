@@ -33,6 +33,8 @@ interface LedGridProps {
   setHorizontalSlideValue: any
   verticalSlideValue: number
   setVerticalSlideValue: any
+  brightnessValue: number
+  setBrightnessValue: any
 }
 
 const LedController = (props: LedGridProps) => {
@@ -59,6 +61,10 @@ const LedController = (props: LedGridProps) => {
 
   const onChangeSliderV = (ev:any, value:number| number[]) =>{
     props.setVerticalSlideValue(value)
+  }
+
+  const onChangeBrightness = (ev:any, value:number| number[]) =>{
+    props.setBrightnessValue(value)
   }
 
 
@@ -111,6 +117,20 @@ const LedController = (props: LedGridProps) => {
           max={20}
           track={false}
           onChange={onChangeSliderV}
+        />
+        <div>
+          {t("Brightness")}
+        </div>
+        <Slider 
+          aria-label="Brightness"
+          defaultValue={100}
+          valueLabelDisplay="auto"
+          value ={props.brightnessValue}
+          step={1}
+          min={0}
+          max={100}
+          track={false}
+          onChange={onChangeBrightness}
         />
       </div>
     </div>

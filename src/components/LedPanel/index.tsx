@@ -11,7 +11,8 @@ const GRID_COL_LENGTH = 12
 
 export interface MetaData{
   horizontalSpeed: number
-  verticalSpeed:number
+  verticalSpeed: number
+  brightness: number
 }
 
 
@@ -25,6 +26,7 @@ const LedPanel = (props: any) => {
   const [copyColor, setCopyColor] = useState<boolean>(false);
   const [horizontalSlideValue, setHorizontalSlideValue] = useState<number>(0);
   const [verticalSlideValue, setVerticalSlideValue] = useState<number>(0);
+  const [brightnessValue, setBrightnessValue] = useState<number>(0);
 
   useEffect(() => {
     props.firebase.getLeds().on("value", (snapshot: any) => {
@@ -47,6 +49,7 @@ const LedPanel = (props: any) => {
       if(metadata!==null){
         setHorizontalSlideValue(metadata.horizontalSpeed)
         setVerticalSlideValue(metadata.verticalSpeed)
+        setBrightnessValue(metadata.brightness)
       }
       setLoading(false);
     });
@@ -75,7 +78,8 @@ const LedPanel = (props: any) => {
     props.firebase.setLeds(transpose(colorArray).flat());
     const metadata: MetaData ={
       horizontalSpeed: horizontalSlideValue,
-      verticalSpeed:verticalSlideValue
+      verticalSpeed:verticalSlideValue,
+      brightness: brightnessValue
     }
     props.firebase.setMetaData(metadata)
   }
@@ -111,6 +115,8 @@ const LedPanel = (props: any) => {
               setHorizontalSlideValue={setHorizontalSlideValue}
               verticalSlideValue={verticalSlideValue}
               setVerticalSlideValue={setVerticalSlideValue}
+              brightnessValue={brightnessValue}
+              setBrightnessValue={setBrightnessValue}
             />
         </div>
       )}

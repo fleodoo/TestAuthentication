@@ -59,5 +59,6 @@
   "Submit": "Envoyer",
   "Randomize": "Aléatoire",
   "Number of Horizontal moves per second":"Nombre de shift Horizontal par seconde: ",
-  "Number of Vertical moves per second":"Nombre de shift Vertical par seconde: "
+  "Number of Vertical moves per second":"Nombre de shift Vertical par seconde: ",
+  "Brightness": "Luminosité"
 }
