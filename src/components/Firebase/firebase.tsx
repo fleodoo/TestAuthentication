@@ -146,8 +146,11 @@ class Firebase {
     return this.storage.ref().child('images/lastPicture.jpg').getDownloadURL();
   }
   
-  setLeds = (leds: string[]) => {
-    this.db.ref("ledpanel/leds").set(leds);
+  setLeds = (leds: string[][]) => {
+    for (var i = 0; i < leds.length; i++) {
+      this.db.ref("ledpanel/leds/"+i).set(leds[i]); 
+    }
+    
   }
   getLeds= () => this.db.ref("ledpanel/leds")
 

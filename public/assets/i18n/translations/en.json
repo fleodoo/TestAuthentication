@@ -59,5 +59,8 @@
   "Submit": "Submit",
   "Randomize": "Randomize",
   "Number of Horizontal moves per second":"Number of Horizontal moves per second: ",
-  "Number of Vertical moves per second":"Number of Vertical moves per second: "
+  "Number of Vertical moves per second":"Number of Vertical moves per second: ",
+  "Brightness": "Brightness",
+  "Number of rows":"Number of rows",
+  "Number of columns":"Number of columns"
 }

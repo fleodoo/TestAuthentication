@@ -36,13 +36,21 @@ const LedGrid = (props: LedGridProps) => {
     }
   }
 
+  const getColor = (col:number,row:number) : string=>{
+    if(!props.matrix[col] || !props.matrix[col][row]){
+      return "#FF0000"
+    }
+    const color = props.matrix[col][row]
+    return color
+  }
+
   return (
     <Grid fluid>
       {[...Array(props.nbrRows)].map((i, row) =>
-        <Row between="xs" key={row} className="ledpanel-row">
+        <Row key={row} className="ledpanel-row">
           {[...Array(props.nbrCols)].map((j, col) =>
               <Col key={col}>
-                <Cell col={col} row={row} color={props.matrix[col][row]} onClick={()=>changeColor(col,row,true)} onHover={()=>hoverCell(col,row)}/>
+                <Cell col={col} row={row} color={getColor(col,row)} onClick={()=>changeColor(col,row,true)} onHover={()=>hoverCell(col,row)}/>
               </Col>
           )}
         </Row>
@@ -67,7 +75,7 @@ const Cell = (props: CellProps) => {
     style={{
       backgroundColor: props.color,
     }}
-    className="ledpanel_cell">
+    className="ledpanel-cell">
     </div>
   );
 };

@@ -35,6 +35,8 @@ interface LedGridProps {
   setVerticalSlideValue: any
   brightnessValue: number
   setBrightnessValue: any
+  setNumberCols: any
+  setNumberRows: any
 }
 
 const LedController = (props: LedGridProps) => {
@@ -67,6 +69,14 @@ const LedController = (props: LedGridProps) => {
     props.setBrightnessValue(value)
   }
 
+  const onChangeNbrCols = (ev:any, value:number| number[]) =>{
+    props.setNumberCols(value)
+  }
+
+  const onChangeNbrRows = (ev:any, value:number| number[]) =>{
+    props.setNumberRows(value)
+  }
+
 
   return (
     <div>
@@ -88,8 +98,37 @@ const LedController = (props: LedGridProps) => {
           {t("Submit")}
         </button>
       </div>
-    </div>
-      <div className="float-child3">
+      <div className="left-left">
+        <div>
+          {t("Number of rows")}
+        </div>
+        <Slider 
+          aria-label="Number of rows"
+          defaultValue={12}
+          valueLabelDisplay="auto"
+          value ={props.nbrRows}
+          step={1}
+          min={12}
+          max={36}
+          track={false}
+          onChange={onChangeNbrRows}
+        />
+        <div>
+          {t("Number of columns")}
+        </div>
+        <Slider 
+          aria-label="Number of columns"
+          defaultValue={10}
+          valueLabelDisplay="auto"
+          value ={props.nbrCols}
+          step={1}
+          min={12}
+          max={36}
+          track={false}
+          onChange={onChangeNbrCols}
+        />
+      </div>
+      <div className="left-right">
         <div>
           {t("Number of Horizontal moves per second")}
         </div>
@@ -134,10 +173,8 @@ const LedController = (props: LedGridProps) => {
         />
       </div>
     </div>
+  </div>
   );
 };
 
 export default LedController
-
-
-

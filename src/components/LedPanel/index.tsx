@@ -6,19 +6,17 @@ import { withFirebase } from "../Firebase";
 import LedGrid from "./LedGrid";
 import LedController from "./LedController";
 
-const GRID_ROW_LENGTH= 12
-const GRID_COL_LENGTH = 12
-
 export interface MetaData{
   horizontalSpeed: number
   verticalSpeed: number
   brightness: number
+  nbrCols: number
+  nbrRows: number
 }
 
 
 const LedPanel = (props: any) => {
   const [color, setColor] = useState("#11f011");
-  const [colorArray, setColorArray] = useState(Array.from(new Array(GRID_COL_LENGTH), () => new Array(GRID_ROW_LENGTH).fill("#FF0000")));
   const [roles, setRoles]= useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const authUser = useContext(AuthUserContext);
@@ -27,22 +25,38 @@ const LedPanel = (props: any) => {
   const [horizontalSlideValue, setHorizontalSlideValue] = useState<number>(0);
   const [verticalSlideValue, setVerticalSlideValue] = useState<number>(0);
   const [brightnessValue, setBrightnessValue] = useState<number>(0);
+  const [nbrCols, setNumberCols] = useState<number>(12);
+  const [nbrRows, setNumberRows] = useState<number>(12);
+  const [colorArray, setColorArray] = useState<string[][]>(Array.from(new Array(nbrCols), () => new Array(nbrRows).fill("#FF0000")));
+
+
+  useEffect(() => {
+    const array = Array.from(new Array(nbrCols), () => new Array(nbrRows).fill("#FF0000"))
+    for (var i = 0; i < array.length; i++) {
+      for (var j = 0; j < array[i].length; j++) { 
+        if(colorArray[i] && colorArray[i][j]){
+          array[i][j]=colorArray[i][j]
+        }
+      }
+    }
+    setColorArray(array)
+  }, [nbrRows,nbrCols]);
 
   useEffect(() => {
     props.firebase.getLeds().on("value", (snapshot: any) => {
       setLoading(true);
       const ledsArray = snapshot.val();
       if(ledsArray!==null){
-        var size = GRID_ROW_LENGTH; 
-        var arrayOfArrays:String[][]= [];
-        for (var i=0; i<ledsArray.length; i+=size) {
-            arrayOfArrays.push(ledsArray.slice(i,i+size));
-        }
-      setColorArray(transpose(arrayOfArrays))
+        setColorArray(transpose(ledsArray))
       }
       setLoading(false);
     });
+    return () => {
+      props.firebase.getLeds().off();
+    };
+  }, [props.firebase,nbrRows,nbrCols]);
 
+  useEffect(() => {
     props.firebase.getMetaData().on("value", (snapshot: any) => {
       setLoading(true);
       const metadata = snapshot.val();
@@ -50,11 +64,12 @@ const LedPanel = (props: any) => {
         setHorizontalSlideValue(metadata.horizontalSpeed)
         setVerticalSlideValue(metadata.verticalSpeed)
         setBrightnessValue(metadata.brightness)
+        setNumberCols(metadata.nbrCols)
+        setNumberRows(metadata.nbrRows)
       }
       setLoading(false);
     });
     return () => {
-      props.firebase.getLeds().off();
       props.firebase.getMetaData().off();
     };
   }, [props.firebase]);
@@ -75,11 +90,13 @@ const LedPanel = (props: any) => {
   }
 
   const submit = ()=>{
-    props.firebase.setLeds(transpose(colorArray).flat());
+    props.firebase.setLeds(transpose(colorArray));
     const metadata: MetaData ={
       horizontalSpeed: horizontalSlideValue,
       verticalSpeed:verticalSlideValue,
-      brightness: brightnessValue
+      brightness: brightnessValue,
+      nbrCols: nbrCols,
+      nbrRows: nbrRows
     }
     props.firebase.setMetaData(metadata)
   }
@@ -90,8 +107,8 @@ const LedPanel = (props: any) => {
         <div className="float-container">
           <div className="float-child1">
             <LedGrid 
-              nbrCols={GRID_COL_LENGTH}
-              nbrRows={GRID_ROW_LENGTH}
+              nbrCols={nbrCols}
+              nbrRows={nbrRows}
               isMouseDown={mouseDown}
               color={color}
               setColor={setColor}
@@ -102,8 +119,10 @@ const LedPanel = (props: any) => {
               />
           </div>
             <LedController
-              nbrCols={GRID_COL_LENGTH}
-              nbrRows={GRID_ROW_LENGTH}
+              nbrCols={nbrCols}
+              setNumberCols={setNumberCols}
+              nbrRows={nbrRows}
+              setNumberRows={setNumberRows}
               setMatrix={setColorArray}
               color={color}
               setColor={setColor}

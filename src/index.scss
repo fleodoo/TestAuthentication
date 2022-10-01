@@ -460,12 +460,12 @@ Note: Beware of modifying this element as it can break the animations - you shou
 .ledpanel {
   .float-container {    
     .float-child1 {
-      width: 700px;
       float: left;
       padding: 20px;
+      overflow-x: scroll;
     }  
     .float-child2 {
-      width: 200px;
+      width: 500px;
       float: left;
       padding: 20px;
       .random{
@@ -482,24 +482,29 @@ Note: Beware of modifying this element as it can break the animations - you shou
         margin-top: 5px;
         margin-bottom: 5px;
       }
+      .left-left {
+        width: 200px;
+        float: left;
+      }    
+      .left-right {
+        width: 200px;
+        float: right;
+      }    
     }
-    .float-child3 {
-      width: 200px;
-      float: left;
-      padding: 20px;
-    }    
   }
 
   .ledpanel-row {
     padding-top: 0.2em;
     padding-bottom: 0.2em;
+    flex-wrap: nowrap;
   }
 
-  .ledpanel_cell{
-    min-height: 3em;
-    max-height: 3em;
-    min-width: 3em;
-    max-width: 3em;    
+  .ledpanel-cell{
+    margin-right: 0.5em;
+    min-height: 2em;
+    max-height: 2em;
+    min-width: 2em;
+    max-width: 2em;    
   }
 
 }

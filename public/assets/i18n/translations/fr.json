@@ -60,5 +60,7 @@
   "Randomize": "Aléatoire",
   "Number of Horizontal moves per second":"Nombre de shift Horizontal par seconde: ",
   "Number of Vertical moves per second":"Nombre de shift Vertical par seconde: ",
-  "Brightness": "Luminosité"
+  "Brightness": "Luminosité",
+  "Number of rows":"Nombre de lignes",
+  "Number of columns":"Nombre de colonnes"
 }
