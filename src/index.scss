@@ -494,13 +494,12 @@ Note: Beware of modifying this element as it can break the animations - you shou
   }
 
   .ledpanel-row {
-    padding-top: 0.2em;
     padding-bottom: 0.2em;
     flex-wrap: nowrap;
   }
 
   .ledpanel-cell{
-    margin-right: 0.5em;
+    margin-right: 0.2em;
     min-height: 2em;
     max-height: 2em;
     min-width: 2em;
