@@ -98,7 +98,7 @@ const LedController = (props: LedGridProps) => {
           {t("Submit")}
         </button>
       </div>
-      <div className="left-left">
+      <div className="right-right">
         <div>
           {t("Number of rows")}
         </div>
@@ -127,8 +127,6 @@ const LedController = (props: LedGridProps) => {
           track={false}
           onChange={onChangeNbrCols}
         />
-      </div>
-      <div className="left-right">
         <div>
           {t("Number of Horizontal moves per second")}
         </div>
