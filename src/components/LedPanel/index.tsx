@@ -40,6 +40,7 @@ const LedPanel = (props: any) => {
       }
     }
     setColorArray(array)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nbrRows,nbrCols]);
 
   useEffect(() => {
