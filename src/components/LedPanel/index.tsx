@@ -12,7 +12,7 @@ export interface MetaData{
   brightness: number
   nbrCols: number
   nbrRows: number
-  changed: boolean
+  ledChanged: boolean
 }
 
 
@@ -29,6 +29,7 @@ const LedPanel = (props: any) => {
   const [nbrCols, setNumberCols] = useState<number>(12);
   const [nbrRows, setNumberRows] = useState<number>(12);
   const [colorArray, setColorArray] = useState<string[][]>(Array.from(new Array(nbrCols), () => new Array(nbrRows).fill("#FF0000")));
+  const [arrayChanged, setArrayChanged] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -68,6 +69,7 @@ const LedPanel = (props: any) => {
         setBrightnessValue(metadata.brightness)
         setNumberCols(metadata.nbrCols)
         setNumberRows(metadata.nbrRows)
+        setArrayChanged(metadata.ledChanged)
       }
       setLoading(false);
     });
@@ -99,7 +101,7 @@ const LedPanel = (props: any) => {
       brightness: brightnessValue,
       nbrCols: nbrCols,
       nbrRows: nbrRows,
-      changed: true,
+      ledChanged: arrayChanged,
     }
     props.firebase.setMetaData(metadata)
   }
@@ -119,6 +121,7 @@ const LedPanel = (props: any) => {
               setMatrix={setColorArray}
               copyColor={copyColor}
               setCopyColor={setCopyColor}
+              setArrayChanged={setArrayChanged}
               />
           </div>
             <LedController

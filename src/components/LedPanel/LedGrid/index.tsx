@@ -12,6 +12,7 @@ interface LedGridProps {
   setMatrix: any
   copyColor: boolean
   setCopyColor: any
+  setArrayChanged: any
 }
 
 const LedGrid = (props: LedGridProps) => {
@@ -27,6 +28,7 @@ const LedGrid = (props: LedGridProps) => {
         newArray[i] = props.matrix[i].slice();
     newArray[col][row] = props.color;
     props.setMatrix(newArray)
+    props.setArrayChanged(true)
     }
   }
 
