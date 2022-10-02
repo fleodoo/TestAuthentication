@@ -12,6 +12,7 @@ export interface MetaData{
   brightness: number
   nbrCols: number
   nbrRows: number
+  changed: boolean
 }
 
 
@@ -97,7 +98,8 @@ const LedPanel = (props: any) => {
       verticalSpeed:verticalSlideValue,
       brightness: brightnessValue,
       nbrCols: nbrCols,
-      nbrRows: nbrRows
+      nbrRows: nbrRows,
+      changed: true,
     }
     props.firebase.setMetaData(metadata)
   }
