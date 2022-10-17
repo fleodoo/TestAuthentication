@@ -50,7 +50,14 @@ const LedPanel = (props: any) => {
       setLoading(true);
       const ledsArray = snapshot.val();
       if(ledsArray!==null){
-        setColorArray(transpose(ledsArray))
+        var newArray = ledsArray.map(function(arr: string | any[]) {
+          return arr.slice();
+        });
+        for (var s of newArray) {
+          s.reverse()
+        }
+        newArray.reverse()
+        setColorArray(transpose(newArray))
       }
       setLoading(false);
     });
