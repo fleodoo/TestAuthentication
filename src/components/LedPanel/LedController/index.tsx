@@ -47,7 +47,7 @@ const LedController = (props: LedGridProps) => {
     for (var col = 0; col < props.nbrCols; col++){
       for (var row = 0; row < props.nbrRows; row++){
         const color: string = "#"+Math.floor(Math.random()*16777215).toString(16);
-        newMatrix[col][row]= color;
+        newMatrix[row][col]= color;
       }
     }
     props.setMatrix(newMatrix)

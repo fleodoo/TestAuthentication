@@ -146,16 +146,8 @@ class Firebase {
   }
   
   setLeds = (leds: string[][]) => {
-    var newArray = leds.map(function(arr) {
-      return arr.slice();
-    });
-    for (var s of newArray) {
-      s.reverse()
-    }
-    newArray.reverse()
     for (var i = 0; i < leds.length; i++) {
-
-      this.db.ref("ledpanel/leds/"+i).set(newArray[i]); 
+      this.db.ref("ledpanel/leds/"+i).set(leds[i]);  
     }
     
   }
